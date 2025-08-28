@@ -1,0 +1,19 @@
+{
+  "name": "expensetracker",
+  "version": "1.0.0",
+  "description": "The Expense tracker help you to track your daily expense, manage the your finances. Make your daily life easy. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "concurrently \"cd ExpenseTracker && npm run dev\" \"cd backend && nodemon server.js\""
+  },
+  "author": "Karan Agrahari",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.10",
+    "motion": "^12.18.1",
+    "tailwindcss": "^4.1.10"
+  }
+}

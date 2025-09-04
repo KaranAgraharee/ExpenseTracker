@@ -5,15 +5,10 @@ import { SendVerificationCOde } from "../middleware/email.js"
 import crypto from 'crypto'
 
 let verificationCode
-export const getuser = async (req, res) => {
+export const getuser = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.user._id)
-    res.status(201).json({
-      message: "User Found",
-      email: user.email,
-      name: user.name,
-      _id: user._id
-    })    
+    next()    
   } catch (error) {
     console.log(error)
     res.status(500).json({
@@ -39,6 +34,8 @@ export const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      totalSpending: 0,
+      budget: 0,
     })
 
     await userModel.save();
@@ -166,11 +163,11 @@ export const login = async (req, res) => {
     });
   }
 };
-export const getProfile = async (req, res) => {
-  const token = req.cookies.Auth_Token;
+export const getProfile = async (req, res, next) => {
+  const token = req.cookies.Auth_Token
   try {
-    if (token) {
-      return res.status(200).json({ message: "Token foumd", token });
+    if (token) { 
+      return res.status(200).json({ message: "Token foumd", token })
     } else if (!token) {
       return res.status(401).json({ message: "Unauthorized, no token found" });
     }

@@ -3,6 +3,7 @@ import { getuser, login,logout,sendOtp,signup, verifyOTP } from "../controller/a
 import { signupValidation, loginValidation } from "../middleware/Authvalidation.js"
 import { AddMember } from "../controller/Groupcontroller.js"
 import { ensureAuthenticated } from "../middleware/Auth.js"
+import { UserAccount, setBudget } from "../controller/expenseController.js"
 
 
 export const AuthRouter = Router()
@@ -12,7 +13,7 @@ AuthRouter.post('/login', loginValidation, login)
 
 AuthRouter.post('/signup', signupValidation, signup)
 
-AuthRouter.get('/verify-user', ensureAuthenticated, getuser)
+AuthRouter.get('/verify-user', ensureAuthenticated, getuser, UserAccount)
 
 AuthRouter.post('/logout', logout)
 
@@ -22,4 +23,4 @@ AuthRouter.post('/verify-otp', verifyOTP)
 
 AuthRouter.get('/user/search', AddMember)
 
-
+AuthRouter.post('/set-budget', ensureAuthenticated, setBudget)

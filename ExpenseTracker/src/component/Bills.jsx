@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -11,11 +12,46 @@ const sectionVariants = {
 };
 
 const Bills = ({
-  upcomingBills = [],
-  paidBills = [],
+  upcomingBills: initialUpcomingBills = [],
+  paidBills: initialPaidBills = [],
   onAddBill = () => {},
   onBillClick = () => {},
 }) => {
+  const [upcomingBills, setUpcomingBills] = useState(initialUpcomingBills);
+  const [paidBills, setPaidBills] = useState(initialPaidBills);
+  const [showModal, setShowModal] = useState(false);
+  const [newBill, setNewBill] = useState({ name: '', amount: '', dueDate: '' });
+
+  const handleAddBill = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setNewBill({ name: '', amount: '', dueDate: '' });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewBill((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateBill = (e) => {
+    e.preventDefault();
+    if (!newBill.name || !newBill.amount || !newBill.dueDate) return;
+    const bill = {
+      id: Date.now(),
+      name: newBill.name,
+      amount: parseFloat(newBill.amount),
+      dueDate: newBill.dueDate,
+      status: 'pending',
+    };
+    setUpcomingBills((prev) => [...prev, bill]);
+    setShowModal(false);
+    setNewBill({ name: '', amount: '', dueDate: '' });
+    if (onAddBill) onAddBill(bill);
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto p-4 grid gap-8 md:grid-cols-3" aria-label="Bills Overview">
       {/* Upcoming Bills */}
@@ -37,13 +73,13 @@ const Bills = ({
                 <button
                   className="w-full text-left px-3 py-2 rounded hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   onClick={() => onBillClick(bill)}
-                  aria-label={`View details for ${bill.name}`}
+                  aria-label={`View details for ₹{bill.name}`}
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium text-gray-800">{bill.name}</span>
                     <span className="text-sm text-gray-500">{bill.dueDate}</span>
                   </div>
-                  <div className="text-sm text-gray-600">${bill.amount}</div>
+                  <div className="text-sm text-gray-600">₹{bill.amount}</div>
                 </button>
               </li>
             ))
@@ -70,13 +106,13 @@ const Bills = ({
                 <button
                   className="w-full text-left px-3 py-2 rounded hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-400"
                   onClick={() => onBillClick(bill)}
-                  aria-label={`View details for ${bill.name}`}
+                  aria-label={`View details for ₹{bill.name}`}
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium text-gray-800">{bill.name}</span>
                     <span className="text-sm text-gray-500">{bill.paidDate}</span>
                   </div>
-                  <div className="text-sm text-gray-600">${bill.amount}</div>
+                  <div className="text-sm text-gray-600">₹{bill.amount}</div>
                 </button>
               </li>
             ))
@@ -96,11 +132,57 @@ const Bills = ({
         <h2 className="text-lg font-semibold mb-4">Add Bill</h2>
         <button
           className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          onClick={onAddBill}
+          onClick={handleAddBill}
           aria-label="Add a new bill"
         >
           + Add Bill
         </button>
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+            <form className="bg-white p-6 rounded-lg shadow-lg w-80" onSubmit={handleCreateBill}>
+              <h3 className="text-lg font-bold mb-4">Create New Bill</h3>
+              <div className="mb-3">
+                <label className="block text-sm font-medium mb-1">Bill Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={newBill.name}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-2 py-1"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="block text-sm font-medium mb-1">Amount</label>
+                <input
+                  type="number"
+                  name="amount"
+                  value={newBill.amount}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-2 py-1"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div className="mb-3">
+                <label className="block text-sm font-medium mb-1">Due Date</label>
+                <input
+                  type="date"
+                  name="dueDate"
+                  value={newBill.dueDate}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-2 py-1"
+                  required
+                />
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button type="button" className="px-3 py-1 rounded bg-gray-200" onClick={handleModalClose}>Cancel</button>
+                <button type="submit" className="px-3 py-1 rounded bg-blue-600 text-white">Create</button>
+              </div>
+            </form>
+          </div>
+        )}
       </motion.section>
     </div>
   );

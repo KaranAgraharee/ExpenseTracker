@@ -14,17 +14,8 @@ const filterBtnVariants = {
 };
 
 const GroupExpense = ({ group, expenses, user }) => {
-  console.log(expenses)
   
   const [selectedFilter, setSelectedFilter] = useState('All')
-  if (!group) {
-    console.log("No group selected")
-  } else if (!group.members) {
-    console.log("Group has no members",)
-  } else {
-    console.log("Group members:", group.members.length)
-  }
-
 
   const getFilteredExpenses = useMemo(() => {
     if (!expenses || expenses.length === 0) return [];
@@ -56,6 +47,27 @@ const GroupExpense = ({ group, expenses, user }) => {
     });
   }, [expenses, selectedFilter]);
 
+  const totalFilteredExpense = useMemo(() => {
+    return getFilteredExpenses.reduce((sum, expense) => sum + (expense.Price || 0), 0);
+  }, [getFilteredExpenses]);
+
+  const memberExpenses = useMemo(() => {
+    const expensesByMember = {};
+    const memberCount = group?.members?.length || 0;
+    let totalExpense = 0;
+    if (!group?.members) return expensesByMember;
+    group.members.forEach(member => {
+      expensesByMember[member._id] = 0;
+    });
+    getFilteredExpenses.forEach(expense => {
+      totalExpense += (expense.Price || 0);
+      if (expense.PaidBy && expense.PaidBy._id) {
+        expensesByMember[expense.PaidBy._id] = (expensesByMember[expense.PaidBy._id] + (expense.Price || 0));
+        console.log(expensesByMember[expense.PaidBy._id])       
+      }
+    });
+    return {expensesByMember, totalExpense, memberCount };
+  }, [getFilteredExpenses, group]);
   const handleFilterClick = (filter) => {
     setSelectedFilter(filter);
   };
@@ -93,15 +105,21 @@ const GroupExpense = ({ group, expenses, user }) => {
           </motion.button>
         ))}
       </motion.div>
-      <h2 className="text-xl  sm:text-2xl font-bold text-gray-800 mb-4 text-center">
-        {group ? `Expenses for ${group.GroupName}` : 'Select a group to view expenses'}
-        <div className='flex gap-2 p-1'>{group?.members?.map((mem)=> (<p className='text-sm  bg-gradient-to-br px-2 rounded-lg  from-yellow-500 via-yellow-200 to-yellow-500'>{(mem.name).toUpperCase()}</p>))}</div>
-        {selectedFilter !== 'All' && (
-          <span className="block text-sm font-normal text-gray-600 mt-1">
-            Filtered by: {selectedFilter}
-          </span>
-        )}
-      </h2>
+      {/* Total and Individual Expenses Section */}
+      <div className="mb-2">
+        <div className="font-bold  text-teal-800 text-lg text-center">
+          Total Expense ({selectedFilter}): ₹{totalFilteredExpense}
+        </div>
+        <div className="flex flex-wrap  justify-center gap-4 mt-2">
+          {group?.members?.map(member => (
+            <div key={member._id} className="bg-slate-200 rounded-lg px-3 py-1 text-sm text-blue-700">
+              <span className="font-semibold">{(member.name).toUpperCase()}:</span>₹{memberExpenses.expensesByMember[member._id] || 0} ||
+              <span className="text-xs text-gray-500"> ₹{(memberExpenses.expensesByMember[member._id])-(memberExpenses.totalExpense/memberExpenses.memberCount) || 0}</span>
+              
+            </div>
+          ))}
+        </div>
+      </div>
       <div className="flex flex-col max-h-[70vh] gap-4 overflow-y-scroll">
         <AnimatePresence>
           {getFilteredExpenses && getFilteredExpenses.length > 0 ? (
@@ -119,11 +137,11 @@ const GroupExpense = ({ group, expenses, user }) => {
                   exit={{ opacity: 0, x: 20 }}
                   layout
                 >
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="flex text-teal-800 items-center gap-3 w-full sm:w-auto">
                     <img
                       src={expense.avatar || '/icon/groupAv.png'}
                       alt="avatar"
-                      className="h-10 w-10 rounded-full object-cover border bg-white"
+                      className="h-10 w-10rounded-full object-cover border bg-white"
                     />
                     <div>{expense.Item}</div>
                     <div>
@@ -133,7 +151,7 @@ const GroupExpense = ({ group, expenses, user }) => {
                         <span>Time: {expense.Time}</span>
                       </div>
                       <div className=" text-gray-500 mt-1">
-                        Paid by: <span className="font-semibold text-gray-700">{expense.PaidBy.name || 'Unknown'}</span>
+                        Paid by: <span className="font-semibold text-black">{expense.PaidBy.name || 'Unknown'}</span>
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const cardVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -16,23 +16,35 @@ const cardVariants = {
 }
 
 const Dashboard = () => {
-    const [expenses, setExpenses] = useState([])
-    const [loading, setLoading] = useState(true)
+
+    const expenses = useSelector((state) => state.expense.expense)
+    const user = useSelector((state) => state.user.user)
+
+    const userExpenses = expenses.filter(exp => exp.PaidBy?._id === user?._id)
+    const otherPersonExpenses = expenses.filter(exp => exp.PaidBy?._id !== user?._id)
+
+
 
     const thisMonthExpenses = expenses.filter(exp => {
         const expDate = new Date(exp.Date)
         const now = new Date()
-        return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear()
+        return expDate.getMonth() === now.getMonth() && expDate.getFullYear() === now.getFullYear() && exp.PaidBy._id === user._id
     }).reduce((sum, exp) => sum + (exp.Price || 0), 0)
-    
+
     const lastMonthExpenses = expenses.filter(exp => {
         const expDate = new Date(exp.Date)
         const now = new Date()
         const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1)
-        return expDate.getMonth() === lastMonth.getMonth() && expDate.getFullYear() === lastMonth.getFullYear()
+        return expDate.getMonth() === lastMonth.getMonth() && expDate.getFullYear() === lastMonth.getFullYear() && exp.PaidBy._id === user._id
     }).reduce((sum, exp) => sum + (exp.Price || 0), 0)
 
-    const recentExpenses = expenses.slice(0, 5)
+
+    const totalExpenses = userExpenses.reduce((sum, exp) => sum + (exp.Price || 0), 0)
+
+    const NetTotal = totalExpenses - otherPersonExpenses.reduce((sum, exp) => sum + (exp.Price || 0))
+
+    const recentExpenses = expenses
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-yellow-50/25 to-indigo-100/15 p-6">
             <motion.div
@@ -46,31 +58,27 @@ const Dashboard = () => {
                     {[
                         {
                             title: 'Total Expenses',
-                            // value: `$${totalExpenses.toFixed(2)}`,
+                            value: `₹${totalExpenses.toFixed(2)}`,
                             color: 'from-red-500 to-pink-500',
                             icon: '💰',
-                            change: '+12%'
                         },
                         {
                             title: 'This Month',
-                            // value: `$${thisMonthExpenses.toFixed(2)}`,
+                            value: `₹${thisMonthExpenses.toFixed(2)}`,
                             color: 'from-green-500 to-emerald-500',
                             icon: '📅',
-                            change: '+8%'
                         },
                         {
                             title: 'Last Month',
-                            // value: `$${lastMonthExpenses.toFixed(2)}`,
+                            value: `₹${lastMonthExpenses.toFixed(2)}`,
                             color: 'from-purple-500 to-violet-500',
                             icon: '📊',
-                            change: '-3%'
                         },
                         {
-                            title: 'Average Daily',
-                            // value: `$${(totalExpenses / 30).toFixed(2)}`,
+                            title: 'My Expenses',
+                            value: `₹${NetTotal.toFixed(2)}`,
                             color: 'from-orange-500 to-red-500',
-                            icon: '📈',
-                            change: '+5%'
+                            icon: '🧑',
                         }
                     ].map((card, i) => (
                         <motion.div
@@ -109,45 +117,42 @@ const Dashboard = () => {
                             <h2 className="text-2xl font-bold text-gray-800">Recent Activity</h2>
                             <button className="text-blue-600 hover:text-blue-800 font-medium">View All</button>
                         </div>
-                        
-                        {loading ? (
-                            <div className="flex items-center justify-center h-64">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                            </div>
-                        ) : recentExpenses.length === 0 ? (
-                            <div className="text-center py-12">
-                                <div className="text-6xl mb-4">📝</div>
-                                <h3 className="text-xl font-semibold text-gray-600 mb-2">No expenses yet</h3>
-                                <p className="text-gray-500">Start tracking your expenses to see them here</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {recentExpenses.map((expense, index) => (
-                                    <motion.div
-                                        key={expense.id || index}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-semibold">
-                                                {expense.Item?.charAt(0)?.toUpperCase() || 'E'}
+                        <div className='h-[50vh] overflow-y-scroll'>
+                            {recentExpenses.length === 0 ? (
+                                <div className="text-center py-12 ">
+                                    <div className="text-6xl mb-4">📝</div>
+                                    <h3 className="text-xl font-semibold text-gray-600 mb-2">No expenses yet</h3>
+                                    <p className="text-gray-500">Start tracking your expenses to see them here</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {recentExpenses.map((expense, index) => (
+                                        <motion.div
+                                            key={expense._id || index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: index * 0.1 }}
+                                            className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center text-white font-semibold">
+                                                    {expense.Item?.charAt(0)?.toUpperCase() || 'E'}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-800">{expense.Item || 'Expense'}</h4>
+                                                    <p className="text-sm text-gray-500">
+                                                        {expense.Date ? new Date(expense.Date).toLocaleDateString() : 'No date'} • {expense.Time || 'No time'}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-semibold text-gray-800">{expense.Item || 'Expense'}</h4>
-                                                <p className="text-sm text-gray-500">
-                                                    {expense.Date ? new Date(expense.Date).toLocaleDateString() : 'No date'} • {expense.Time || 'No time'}
-                                                </p>
+                                            <div className="text-right">
+                                                <p className="font-bold text-gray-800">₹{expense.Price || 0}</p>
                                             </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-bold text-gray-800">${expense.Price || 0}</p>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        )}
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </motion.div>
 
                     {/* Quick Actions & Stats */}
@@ -181,10 +186,10 @@ const Dashboard = () => {
                                 <div>
                                     <div className="flex justify-between text-sm mb-2">
                                         <span className="text-gray-600">This Month</span>
-                                        <span className="font-semibold">${thisMonthExpenses.toFixed(2)}</span>
+                                        <span className="font-semibold">₹{thisMonthExpenses.toFixed(2)}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div 
+                                        <div
                                             className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500"
                                             style={{ width: `${Math.min((thisMonthExpenses / 2000) * 100, 100)}%` }}
                                         ></div>
@@ -193,10 +198,10 @@ const Dashboard = () => {
                                 <div>
                                     <div className="flex justify-between text-sm mb-2">
                                         <span className="text-gray-600">Last Month</span>
-                                        <span className="font-semibold">${lastMonthExpenses.toFixed(2)}</span>
+                                        <span className="font-semibold">₹{lastMonthExpenses.toFixed(2)}</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div 
+                                        <div
                                             className="bg-gradient-to-r from-purple-500 to-violet-500 h-2 rounded-full transition-all duration-500"
                                             style={{ width: `${Math.min((lastMonthExpenses / 2000) * 100, 100)}%` }}
                                         ></div>
@@ -207,9 +212,6 @@ const Dashboard = () => {
                     </motion.div>
                 </div>
             </motion.div>
-
-            {/* Add Expense Modal */}
-
         </div>
     )
 }

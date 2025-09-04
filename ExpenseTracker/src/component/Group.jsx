@@ -33,20 +33,18 @@ const Group = () => {
     groupData()
   }, [dispatch])
 
-
   const CurrentGroup = (e) => {
     try {
       const Show = e.currentTarget.id
       
-      console.log(Show)
-
-      console.log(Expense)
-
       const selectedGroup = Group.find((grp) => String(grp._id) === String(Show))
-
-      const GroupExpense = Expense.filter((exp) => String(exp.Group._id) === String(Show))
       
+      const GroupExpense = Expense.filter(
+        (exp) => String(exp.Group._id) === String(Show)
+      )   
+      console.log(GroupExpense, Show)
       dispatch(SetCurrent_Expense(GroupExpense))
+
 
       if (!selectedGroup) {
         console.log("No group found with id:", Show, "in", Group)
@@ -58,8 +56,7 @@ const Group = () => {
     }
 
   }
-  console.log(CurrentGroup)
-
+  console.log(Expense)
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, type: 'spring', staggerChildren: 0.1 } },

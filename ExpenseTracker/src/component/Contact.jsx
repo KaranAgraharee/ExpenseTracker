@@ -56,24 +56,22 @@ const Contact = () => {
 
     const groupExps = expenses.filter(
       (exp) =>
-        exp.Group?.GroupName !== "non-group" &&
-        (exp.PaidBy._id === Pid ||
+        exp.Group.GroupName &&(exp.PaidBy._id === Pid ||
           exp.PaidBy._id === currentUser._id)
-    );
-
+    )
 
     const nonGroupExps = expenses.filter(
       (exp) =>
         (exp.PaidBy._id === Pid ||
           exp.PaidBy._id === currentUser._id) &&
-        exp.Group === "non-group"
+        (!exp.Group) &&
+        (!exp.Group && exp.Members && exp.Members.length === 2)
     );
 
     setGroupExpense(groupExps);
     setNonGroupExpense(nonGroupExps);
 
   }
-  console.log(NonGroupExpense)
   useEffect(() => {
     try {
       ExpenseShow()
@@ -366,19 +364,19 @@ const Contact = () => {
                     <div className="grid grid-cols-2 gap-3 mx-auto">
                       <div className="bg-gradient-to-br from-green-400/20 to-green-200/10 rounded-xl p-4 text-center shadow hover:scale-105 transition">
                         <div className="text-xs text-slate-400 mb-1">Group Total</div>
-                        <div className="font-bold text-green-700 text-lg">{formatCurrency(selected?.totalGroupSpending)}</div>
+                        <div className="font-bold text-green-700 text-lg">₹{selected?.totalGroupSpending} </div>
                       </div>
                       <div className="bg-gradient-to-br from-amber-400/20 to-amber-200/10 rounded-xl p-4 text-center shadow hover:scale-105 transition">
                         <div className="text-xs text-slate-400 mb-1">Non‑Group Total</div>
-                        <div className="font-bold text-amber-700 text-lg">{formatCurrency(selected?.totalNonGroupSpending)}</div>
+                        <div className="font-bold text-amber-700 text-lg">₹{selected?.totalNonGroupSpending} </div>
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">{selected?.GroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">₹{selected?.GroupExpense?.length || 0}</div>
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Non‑Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">{selected?.NonGroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">₹{selected?.NonGroupExpense?.length || 0}</div>
                       </div>
                     </div>
                     <ContactExpense

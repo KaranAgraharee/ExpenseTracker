@@ -1,133 +1,227 @@
-import { Expense } from '../model/expense.js';
-import { groupModel } from '../model/group.js';
-import { Contact } from '../model/Contact.js';
+import { Expense } from "../model/expense.js";
+import { groupModel } from "../model/group.js";
+import { Contact } from "../model/Contact.js";
+import { UserModel } from "../model/User.js";
 
 
-export const createExpense = async (req, res) => {
-    try {
-        const { Group, Date, Time, Item, Price, Members, PaidBy, isGroupExpense} = req.body
-        const userId = req.user
-        const expense = new Expense({ Members, PaidBy, Group, Date, Time,  Item, Price })
-        await expense.save()
 
-        try {
-            const expenseType = Group.GroupName;
-            const allMembers = [...Members]
-            
-            const contacts = await Contact.find({
-                Users: { $all: allMembers },
-                $expr: { $eq: [{ $size: "$Users" }, allMembers.length] }
-            })
-            for (const contact of contacts) {
-                if (expenseType === 'non-group') {
-                    if (!contact.Non_GroupExpense.includes(expense._id)) {
-                        contact.Non_GroupExpense.push(expense._id);
-                    }
-                } else {
-                    if (!contact.GroupExpense.includes(expense._id)) {
-                        contact.GroupExpense.push(expense._id);
-                    }
-                }
-                const groupMem = Members.length()
-                const groupExpenses = await Expense.find({ _id: { $in: contact.GroupExpense } });
-                const nonGroupExpenses = await Expense.find({ _id: { $in: contact.Non_GroupExpense } });
-                
-                contact.totalGroupSpending = groupExpenses.reduce((sum, exp) => sum + exp.Price, 0);
-                contact.totalNonGroupSpending = nonGroupExpenses.reduce((sum, exp) => sum + exp.Price, 0);
-                contact.lastUpdated = new Date()
-                
-                await contact.save()
-            }
-        } catch (contactError) {
-            console.error('Error updating contacts:', contactError);
-        }
-
-        res.status(201).json({
-            message: 'Expense created successfully',
-            success: true,
-            expense,
-        })
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: 'Internal server error',
-            success: false,
-        })
-    }
-}
+export const createExpense = async (req, res, next) => {
+  try {
+    const { Group, Date, Time, Item, Price, Members, PaidBy, isGroupExpense } =
+      req.body;
+    const user = req.user
+    const expense = new Expense({
+      Members,
+      PaidBy,
+      Group,
+      Date,
+      Time,
+      Item,
+      Price,
+    });
+    await expense.save();
+    res.status(201).json({
+      message: "Expense created successfully",
+      success: true,
+      expense,
+    });
+    UserAccount()
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
 export const getExpenses = async (req, res) => {
-    try {
-        const userId = req.user._id
-        const expenses = await Expense.find({ Members:userId }).populate('PaidBy', 'name email') 
-        .populate('Members', 'name email')
-        .populate('Group', 'GroupName')
+  try {
+    const user = req.user._id;
+    const expenses = await Expense.find({ Members: user })
+      .populate("PaidBy", "name email")
+      .populate("Members", "name email")
+      .populate("Group", "GroupName");
 
-        res.status(200).json({
-            message: 'Expenses fetched successfully',
-            success: true,
-            expenses
-        })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({
-            message: 'Internal server error',
-            success: false,
-        });
+    res.status(200).json({
+      message: "Expenses fetched successfully",
+      success: true,
+      expenses,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+export const updateExpense = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const expenseId = req._id;
+    const { PaidBy, Date, Time, Item, Price } = req.body;
+    const expense = await Expense.findOneAndUpdate(
+      { _id: expenseId },
+      req.body,
+      { new: true }
+    );
+
+    if (!expense) {
+      return res.status(404).json({
+        message: "Expense not found or unauthorized",
+        success: false,
+      });
     }
-}
-export const updateExpense = async (req, res) => {
-    try { 
-        const userId = req.user
-        const expenseId = req._id
-        const {user, Date, Time, Item, Price } = req.body
-        const expense = await Expense.findOneAndUpdate(
-            { _id:expenseId, user:userId },
-            req.body,
-            { new: true },
-        );
+    res.status(200).json({
+      message: "Expense updated successfully",
+      success: true,
+      expense,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
 
-        if (!expense) {
-            return res.status(404).json({
-                message: 'Expense not found or unauthorized',
-                success: false
-            })
-        }
-        res.status(200).json({
-            message: 'Expense updated successfully',
-            success: true,
-            expense
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            message: 'Internal server error',
-            success: false,
-        })
+export const deleteExpense = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const expenseId = req._id;
+
+    const expense = await Expense.findOneAndDelete({ _id: expenseId });
+
+    if (!expense) {
+      return res.status(404).json({
+        message: "Expense not found or unauthorized",
+        success: false,
+      });
     }
-}
+    res.status(200).json({
+      message: "Expense deleted successfully",
+      success: true,
+    });
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
 
-export const deleteExpense = async (req, res) => {
-    try {
-        const userId = req.user
-        const expenseId = req._id
-        
-        const expense = await Expense.findOneAndDelete({ _id:expenseId })
 
-        if (!expense) {
-            return res.status(404).json({
-                message: 'Expense not found or unauthorized',
-                success: false
-            })
-        }
-        res.status(200).json({
-            message: 'Expense deleted successfully',
-            success: true
-        })
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({
-            message: 'Internal server error',
-            success: false
-        })
-    }
+
+export const UserAccount = async (req, res, next) => {
+  try {
+    const user = req.user._id;
+    const GroupExpenseTotal = await Expense.aggregate([
+      {
+        $match: {
+          Members: user,
+          Group: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $addFields: {
+          memberCount: { $size: "$Members" },
+        },
+      },
+      {
+        $project: {
+          value: {
+            $cond: [
+              { $eq: ["$PaidBy", user] },
+              {
+                $subtract: ["$Price", { $divide: ["$Price", "$memberCount"] }],
+              },
+              { $multiply: [-1, { $divide: ["$Price", "$memberCount"] }] },
+            ],
+          },
+        },
+      },
+      { $group: { _id: null, total: { $sum: "$value" } } },
+    ]);
+    const NonGroupContactExpenseTotal = await Expense.aggregate([
+      {
+        $match: {
+          Members: user,
+          Group: { $exists: false },
+        },
+      },
+      {
+        $project: {
+          value: {
+            $cond: [
+              { $eq: ["$PaidBy", user] },
+              { $divide: ["$Price", 2] },
+              { $multiply: [-1, { $divide: ["$Price", 2] }] },
+            ],
+          },
+        },
+      },
+      { $group: { _id: null, total: { $sum: "$value" } } },
+    ]);
+    const BillTotal = await Expense.aggregate([
+      { $match: { User: user } },
+      { $group: { _id: null, total: { $sum: "$Price" } } },
+    ]);
+
+    // Extract totals safely
+    const groupTotal = GroupExpenseTotal[0]?.total || 0;
+    const nonGroupTotal = NonGroupContactExpenseTotal[0]?.total || 0;
+    const billTotal = BillTotal[0]?.total || 0;
+
+    const totalSpending = groupTotal + nonGroupTotal + billTotal;
+
+    // Update user
+    await UserModel.findOneAndUpdate(
+      { _id: user },
+      { $set: { totalSpending } },
+      { new: true }
+    );
+
+    const userDoc = await UserModel.findById(user);
+
+    res.status(200).json({
+      message: "User Found",
+      email: userDoc.email,
+      name: userDoc.name,
+      _id: userDoc._id,
+      totalSpending: userDoc.totalSpending,
+      budget: userDoc.budget,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+      success: false,
+    });
+  }
+};
+
+
+export const setBudget = async (req, res, next) => {
+  try {
+    const user = req.user._id;
+    const { budget } = req.body;
+    await UserModel.findOneAndUpdate(
+      { _id: user },
+      { $set: { budget } },
+      { new: true }
+    )
+    res.status(200).json({
+        message: "Budget set successfully",
+        success: true,
+        budget: budget,
+    })
+  }catch(error){
+    res.status(500).json({
+        message: "Internal server error",
+        success: false,
+    })
+  }
 }

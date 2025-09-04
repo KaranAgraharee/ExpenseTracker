@@ -6,14 +6,6 @@ const ContactSchema = new mongoose.Schema({
         ref: 'Users',
         required: true
     }],
-    GroupExpense: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expense'
-    }],
-    Non_GroupExpense: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expense'
-    }],
     totalGroupSpending: {
         type: Number,
         default: 0

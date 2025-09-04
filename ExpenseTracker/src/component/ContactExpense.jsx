@@ -39,7 +39,6 @@ const ContactExpense = ({ contact, user }) => {
                 Time: data.Time,
                 PaidBy: paidByMember,
                 Members: [contact, UserData],
-                Group: 'non-group'
             }
             console.log(expensedata)
             const response = await fetch('http://localhost:7000/Home/expense', {

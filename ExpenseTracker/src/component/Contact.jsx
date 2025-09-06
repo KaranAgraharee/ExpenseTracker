@@ -76,7 +76,7 @@ const Contact = () => {
     try {
       ExpenseShow()
     } catch (error) {
-      console.log("contact expense of member is not loding")
+      console.log("contact expense of member is not loding", error)
     }
   }, [expenses, GroupExpense, NonGroupExpense]);
 

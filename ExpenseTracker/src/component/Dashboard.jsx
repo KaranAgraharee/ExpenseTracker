@@ -41,7 +41,7 @@ const Dashboard = () => {
 
     const totalExpenses = userExpenses.reduce((sum, exp) => sum + (exp.Price || 0), 0)
 
-    const NetTotal = totalExpenses - otherPersonExpenses.reduce((sum, exp) => sum + (exp.Price || 0))
+    const NetTotal = totalExpenses - otherPersonExpenses.reduce((sum, exp) => sum + (exp.Price || 0), 0)
 
     const recentExpenses = expenses
 
@@ -75,7 +75,7 @@ const Dashboard = () => {
                             icon: '📊',
                         },
                         {
-                            title: 'My Expenses',
+                            title: 'Budget',
                             value: `₹${NetTotal.toFixed(2)}`,
                             color: 'from-orange-500 to-red-500',
                             icon: '🧑',

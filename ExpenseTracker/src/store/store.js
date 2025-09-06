@@ -6,6 +6,8 @@ import UserSlice from './slicer/userSlice'
 import Current_ExpenseSlice from './slicer/CurrentExpense'
 import Current_GroupSlice  from './slicer/CurrentGroup'
 import ContactSlice  from './slicer/ContactSlice'
+import Billslice from './slicer/billslice'
+import { BudgetSlice } from './slicer/Budgetslice'
 
 export default configureStore({
   reducer: {
@@ -16,5 +18,7 @@ export default configureStore({
     Current_Expense: Current_ExpenseSlice,
     Current_Group : Current_GroupSlice,
     Contacts: ContactSlice,
+    Bills:Billslice,
+    Budget:BudgetSlice,
   },
 })

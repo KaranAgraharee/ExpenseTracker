@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react'
+import React, { useEffect } from 'react'
 import Navbar from '../component/Navbar'
 import Dashboard from '../component/Dashboard'
 import Budgets from '../component/Budgets'
@@ -12,20 +12,22 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '../store/slicer/userSlice'
 import { AnimatePresence, motion } from 'motion/react'
 import { SetExpense } from '../store/slicer/expenseSlice'
+import { setBills } from '../store/slicer/billslice'
 
 const Home = () => {
-  
+
+  const API = 'http://localhost:7000/'
   const dispatch = useDispatch()
 
-  const open = useSelector((state)=> state.navButton?.component)
-  const user = useSelector((state)=> state.user?.user)
-  const expense = useSelector((state)=> state.expense?.expense)
-  const Current_Expense = useSelector((state)=> state.Current_Expense?.Current_Expense)
+  const open = useSelector((state) => state.navButton?.component)
+  const user = useSelector((state) => state.user?.user)
+  const expense = useSelector((state) => state.expense?.expense)
+  const Current_Expense = useSelector((state) => state.Current_Expense?.Current_Expense)
   const navigate = useNavigate()
 
-  
+
   useEffect(() => {
-    const Get_Expense = async() => {
+    const Get_Expense = async () => {
       try {
         const res = await fetch('http://localhost:7000/Home/expense', {
           method: 'GET',
@@ -38,49 +40,61 @@ const Home = () => {
         console.log(error)
       }
     }
-    
+
     if (user) {
       Get_Expense()
     }
-  }, [user, dispatch, Current_Expense])
-  
+  }, [])
+
 
   useEffect(() => {
-    fetch('http://localhost:7000/auth/verify-user', {
+    fetch(`{API}auth/verify-user`, {
       method: "GET",
       credentials: 'include'
     })
-    .then(res => {
-      if (res.status === 401) {
-        console.log("Not logged in");
-        navigate('/Auth')
-      } else if (res.status === 403) {
-        console.log("Invalid token");
-        navigate('/Auth')
-      } else if (res.status === 500) {
-        console.log("Error! User not found");
-        navigate('/Auth')
-      } else {
-        return res.json();
-      }
-    })
-    .then(data => {
-      if (data) {
-        dispatch(setUser(data))
-      }
-    })
-    .catch(error => {
-      console.log("Fetch error:", error)
-    })
+      .then(res => {
+        if (res.status === 401) {
+          console.log("Not logged in")
+          navigate('/Auth')
+        } else if (res.status === 403) {
+          console.log("Invalid token")
+          navigate('/Auth')
+        } else if (res.status === 500) {
+          console.log("Error! User not found")
+          navigate('/Auth')
+        } else {
+          return res.json()
+        }
+      })
+      .then(data => {
+        if (data) {
+          dispatch(setUser(data))
+        }
+      })
+      .catch(error => {
+        console.log("Fetch error:", error)
+      })
   }, [])
 
-  // Monitor user state changes
   useEffect(() => {
-    if (user) {
-      console.log("User state updated:", user)
+    const fetchBills = async () => {
+      try {
+        const res = await fetch(`${API}getBill`, {
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          method: 'GET',
+        });
+        const data = await res.json();
+        if (data.success) {
+          dispatch(setBills(data.Bill));
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [user])
-  
+    fetchBills()
+  }, [])
+
 
 
   return (
@@ -93,7 +107,7 @@ const Home = () => {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="absolute left-4 top-10 z-10"
       >
-        <Navbar/>
+        <Navbar />
       </motion.div>
 
       {/* Main Content Area with proper spacing */}
@@ -108,7 +122,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <Dashboard/>
+              <Dashboard />
             </motion.div>
           )}
           {open === 'Budgets' && (
@@ -119,7 +133,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <Budgets/>
+              <Budgets />
             </motion.div>
           )}
           {open === 'Contact' && (
@@ -130,7 +144,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <Contact/>
+              <Contact />
             </motion.div>
           )}
           {open === 'Group' && (
@@ -141,7 +155,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <Group/>
+              <Group />
             </motion.div>
           )}
           {open === 'Bills' && (
@@ -152,7 +166,7 @@ const Home = () => {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <Bills/>
+              <Bills />
             </motion.div>
           )}
         </AnimatePresence>

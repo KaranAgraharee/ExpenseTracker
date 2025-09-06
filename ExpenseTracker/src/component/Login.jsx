@@ -5,31 +5,31 @@ import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
-    
     const navigate = useNavigate()
-
     const [Error, setError] = useState('')
     const [showPassword, setShowPassword] = useState(false)
-   
+    const [isLoading, setIsLoading] = useState(false)
+
     const onSubmit = async (data) => {
-            try {
+        setIsLoading(true)
+        try {
             const res = await fetch('http://localhost:7000/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
                 credentials: 'include'
             });
-            console.log(res)
             if(!res.ok){
                 const responseData = await res.json();
                 setError(responseData.message || "Login failed");
+                setIsLoading(false)
                 return
             }
             navigate('/Home')
-            console.log(Error)
         }catch (error) {
             setError(error.message || "An error occurred");
-            console.log(error)
+        } finally {
+            setIsLoading(false)
         }
     }
     return (
@@ -143,13 +143,14 @@ const Login = () => {
                     <motion.button 
                         className='w-full p-4 bg-gradient-to-r from-blue-500 to-teal-600 text-black font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl'
                         type="submit"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                        whileTap={{ scale: isLoading ? 1 : 0.98 }}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1, duration: 0.6 }}
+                        disabled={isLoading}
                     >
-                        Sign In
+                        {isLoading ? 'Signing In...' : 'Sign In'}
                     </motion.button>
                 </motion.form>
             </motion.div>

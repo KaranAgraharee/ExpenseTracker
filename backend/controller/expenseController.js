@@ -7,24 +7,42 @@ import { UserModel } from "../model/User.js";
 
 export const createExpense = async (req, res, next) => {
   try {
-    const { Group, Date, Time, Item, Price, Members, PaidBy, isGroupExpense } =
-      req.body;
+    const { Date, Time, Item, Price, Members, PaidBy } =
+    req.body
     const user = req.user
-    const expense = new Expense({
+    if(req.body.Group){
+      const Group = req.body.Group
+      const expense = new Expense({
+        Members,
+        PaidBy,
+        Group,
+        Date,
+        Time,
+        Item,
+        Price,
+      });
+      await expense.save();
+      res.status(201).json({
+        message: "Expense created successfully",
+        success: true,
+        expense,
+      })
+}else{               
+const expense = new Expense({
       Members,
       PaidBy,
-      Group,
       Date,
       Time,
       Item,
       Price,
-    });
-    await expense.save();
-    res.status(201).json({
-      message: "Expense created successfully",
-      success: true,
-      expense,
-    });
+      })
+      await expense.save();
+      res.status(201).json({
+        message: "Expense created successfully",
+        success: true,
+        expense,
+    })
+  }
     UserAccount()
   } catch (error) {
     console.error(error);
@@ -59,26 +77,39 @@ export const updateExpense = async (req, res, next) => {
   try {
     const user = req.user;
     const expenseId = req._id;
-    const { PaidBy, Date, Time, Item, Price } = req.body;
-    const expense = await Expense.findOneAndUpdate(
-      { _id: expenseId },
-      req.body,
-      { new: true }
-    );
-
-    if (!expense) {
-      return res.status(404).json({
-        message: "Expense not found or unauthorized",
-        success: false,
+    const { Members ,PaidBy, Date, Time, Item, Price } = req.body;
+    const User = Members.some((m)=>m._id===user)
+    if(User&&PaidBy==user){
+      const expense = await Expense.findOneAndUpdate(
+        { _id: expenseId },
+        req.body,
+        { new: true }
+      )
+      if (!expense) {
+        return res.status(404).json({
+          message: "Expense not found",
+          success: false,
+        });
+      }
+      res.status(200).json({
+        message: "Expense updated successfully",
+        success: true,
+        expense,
       });
-    }
-    res.status(200).json({
-      message: "Expense updated successfully",
-      success: true,
-      expense,
-    });
-    next();
-  } catch (error) {
+    }else if(User && PaidBy!==user){
+      return res.status(404).json({
+        message: "User not allowed",
+        success: false,
+      });  
+    
+    }else{
+        return res.status(404).json({
+          message: "Unauthorised",
+          success: false,
+        });  
+      }
+      next();
+    }catch (error) {
     console.error(error);
     res.status(500).json({
       message: "Internal server error",
@@ -90,21 +121,33 @@ export const updateExpense = async (req, res, next) => {
 export const deleteExpense = async (req, res, next) => {
   try {
     const user = req.user;
-    const expenseId = req._id;
-
-    const expense = await Expense.findOneAndDelete({ _id: expenseId });
-
-    if (!expense) {
+    const {_id, Members, PaidBy} = req.body
+    const User = Members.some((m)=>m._id === user)
+    if (PaidBy===user &&  User) {
+      const expense = await Expense.findOneAndDelete({ _id: _id });
+      if (!expense) {
+        return res.status(404).json({
+          message: "Expense not found.",
+          success: false,
+        });
+      }
+      res.status(200).json({
+        message: "Expense deleted successfully",
+        success: true,
+      })
+      next()
+    } else if(User && PaidBy!==user){
       return res.status(404).json({
-        message: "Expense not found or unauthorized",
+        message: "User not allowed",
         success: false,
-      });
+      })
+    }else{
+      return res.status(404).json({
+        message: "Unauthorised",
+        success: false,
+      })
+
     }
-    res.status(200).json({
-      message: "Expense deleted successfully",
-      success: true,
-    });
-    next();
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -171,14 +214,12 @@ export const UserAccount = async (req, res, next) => {
       { $group: { _id: null, total: { $sum: "$Price" } } },
     ]);
 
-    // Extract totals safely
     const groupTotal = GroupExpenseTotal[0]?.total || 0;
     const nonGroupTotal = NonGroupContactExpenseTotal[0]?.total || 0;
     const billTotal = BillTotal[0]?.total || 0;
 
     const totalSpending = groupTotal + nonGroupTotal + billTotal;
 
-    // Update user
     await UserModel.findOneAndUpdate(
       { _id: user },
       { $set: { totalSpending } },
@@ -201,7 +242,7 @@ export const UserAccount = async (req, res, next) => {
       success: false,
     });
   }
-};
+}
 
 
 export const setBudget = async (req, res, next) => {

@@ -15,6 +15,7 @@ import { AuthRouter } from "./Routes/AuthRouter.js"
 import { ExpenseRouter } from "./Routes/expenseRouter.js"
 import { GroupRouter } from "./Routes/GroupRouter.js"
 import { ContactRouter } from "./Routes/contactRouter.js"
+import { BillRouter } from "./Routes/billRouter.js"
 
 
 
@@ -35,6 +36,7 @@ app.use('/auth', AuthRouter )
 app.use('/Home', GroupRouter)
 app.use('/Home', ExpenseRouter)
 app.use('/Home', ContactRouter)
+app.use('/Home', BillRouter)
 
 
 

@@ -21,6 +21,10 @@ const BillSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    Paid:{
+      type: String,
+      required: true,
+    },
     Notes: {
       type: String,
       trim: true,
@@ -29,4 +33,7 @@ const BillSchema = new mongoose.Schema(
   { timestamps: true } 
 );
 
-export default mongoose.model("Bill", BillSchema);
+const Bill = mongoose.model("Bill", BillSchema);
+
+export default Bill;
+ 

@@ -8,12 +8,12 @@ export const BudgetSlice = createSlice({
     name: "Budget",
     initialState,
     reducers: {
-        setBills:(state, action) =>{
+        setBudget:(state, action) =>{
             state.Budget = action.payload
         }
     }
 })
 
-export const{setBills} = BudgetSlice.actions
+export const{setBudget} = BudgetSlice.actions
 
 export default BudgetSlice.reducer

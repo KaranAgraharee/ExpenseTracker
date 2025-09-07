@@ -15,7 +15,7 @@ AuthRouter.post('/signup', signupValidation, signup)
 
 AuthRouter.get('/verify-user', ensureAuthenticated, getuser, UserAccount)
 
-AuthRouter.post('/logout', logout)
+AuthRouter.get('/logout',ensureAuthenticated, logout)
 
 AuthRouter.post('/send-otp', sendOtp )
 
@@ -23,4 +23,5 @@ AuthRouter.post('/verify-otp', verifyOTP)
 
 AuthRouter.get('/user/search', AddMember)
 
-AuthRouter.post('/set-budget', ensureAuthenticated, setBudget)
+AuthRouter.post('/set_budget', ensureAuthenticated, setBudget)
+

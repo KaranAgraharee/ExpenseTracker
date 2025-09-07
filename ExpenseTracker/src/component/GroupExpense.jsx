@@ -1,5 +1,9 @@
 import React, { useState, useMemo } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import { SetExpense } from '../store/slicer/expenseSlice';
+import { SetCurrent_Expense } from '../store/slicer/CurrentExpense';
 import CreatExpense from './CreateExpense';
 
 const cardVariants = {
@@ -16,20 +20,25 @@ const filterBtnVariants = {
 const GroupExpense = ({ group, expenses, user }) => {
   
   const [selectedFilter, setSelectedFilter] = useState('All')
+  const dispatch = useDispatch()
+  const API = 'http://localhost:7000/Home/'
+  const [editOpen, setEditOpen] = useState(false)
+  const [selectedExpense, setSelectedExpense] = useState(null)
+  const [form, setForm] = useState({ Item: '', Price: '', Date: '', Time: '' })
 
   const getFilteredExpenses = useMemo(() => {
     if (!expenses || expenses.length === 0) return [];
 
     const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay());
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const startOfWeek = new Date(today)
+    startOfWeek.setDate(today.getDate() - today.getDay())
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0)
 
     return expenses.filter(expense => {
-      const expenseDate = new Date(expense.Date);
+      const expenseDate = new Date(expense.Date)
       const expenseDateOnly = new Date(expenseDate.getFullYear(), expenseDate.getMonth(), expenseDate.getDate());
 
       switch (selectedFilter) {
@@ -45,22 +54,22 @@ const GroupExpense = ({ group, expenses, user }) => {
           return true;
       }
     });
-  }, [expenses, selectedFilter]);
+  }, [expenses, selectedFilter])
 
   const totalFilteredExpense = useMemo(() => {
     return getFilteredExpenses.reduce((sum, expense) => sum + (expense.Price || 0), 0);
-  }, [getFilteredExpenses]);
+  }, [getFilteredExpenses])
 
   const memberExpenses = useMemo(() => {
-    const expensesByMember = {};
-    const memberCount = group?.members?.length || 0;
-    let totalExpense = 0;
-    if (!group?.members) return expensesByMember;
+    const expensesByMember = {}
+    const memberCount = group?.members?.length || 0
+    let totalExpense = 0
+    if (!group?.members) return expensesByMember
     group.members.forEach(member => {
-      expensesByMember[member._id] = 0;
+      expensesByMember[member._id] = 0
     });
     getFilteredExpenses.forEach(expense => {
-      totalExpense += (expense.Price || 0);
+      totalExpense += (expense.Price || 0)
       if (expense.PaidBy && expense.PaidBy._id) {
         expensesByMember[expense.PaidBy._id] = (expensesByMember[expense.PaidBy._id] + (expense.Price || 0));
         console.log(expensesByMember[expense.PaidBy._id])       
@@ -71,6 +80,67 @@ const GroupExpense = ({ group, expenses, user }) => {
   const handleFilterClick = (filter) => {
     setSelectedFilter(filter);
   };
+
+  const openEdit = (expense) => {
+    setSelectedExpense(expense)
+    setForm({
+      Item: expense.Item || '',
+      Price: expense.Price || 0,
+      Date: expense.Date ? new Date(expense.Date).toISOString().slice(0, 10) : '',
+      Time: expense.Time || ''
+    })
+    setEditOpen(true)
+  }
+
+  const onChange = (e) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  const submitEdit = async (e) => {
+    e.preventDefault()
+    if (!selectedExpense) return
+    try {
+      const body = {
+        _id: selectedExpense._id,
+        Item: form.Item,
+        Price: Number(form.Price),
+        Date: form.Date,
+        Time: form.Time,
+        Members: (selectedExpense.Members || []).map(m => m._id || m),
+        PaidBy: selectedExpense.PaidBy?._id || selectedExpense.PaidBy
+      }
+      const res = await fetch(`${API}expense`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(body)
+      })
+      const data = res.json()
+      console.log(data)
+      if (res.ok) {
+        const ref = await fetch(`${API}expense`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        })
+        const data = await ref.json()
+        if (data.success && data.expenses) {
+          dispatch(SetExpense(data.expenses))
+          if (group?._id) {
+            const groupExpenses = data.expenses.filter(exp => String(exp.Group._id) === String(group._id))
+            dispatch(SetCurrent_Expense(groupExpenses))
+          }
+        }
+        setEditOpen(false)
+        setSelectedExpense(null)
+      } else {
+        console.error('Failed to update expense')
+      }
+    } catch (err) {
+      console.error('Update error:', err)
+    }
+  }
 
   const filterOptions = ['All', 'Today', 'This Week', 'This Month', 'Last Month'];
 
@@ -171,6 +241,13 @@ const GroupExpense = ({ group, expenses, user }) => {
                       <div className="text-sm text-emerald-500">
                         Total: ₹{expense.Price}
                       </div>
+                      {expense.PaidBy._id === user._id&&(<button
+                        onClick={() => openEdit(expense)}
+                        className="mt-2 text-sm text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      )}
                     </div>
                   )}
                 </motion.div>
@@ -192,6 +269,68 @@ const GroupExpense = ({ group, expenses, user }) => {
         </AnimatePresence>
       </div>
       <CreatExpense />
+      {editOpen && (
+        <motion.div
+          className="fixed inset-0 flex items-center justify-center z-50 bg-black/30"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 border border-gray-200"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+          >
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Edit Expense</h3>
+            <form onSubmit={submitEdit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <input
+                name="Item"
+                value={form.Item}
+                onChange={onChange}
+                placeholder="ITEM"
+                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                type="text"
+              />
+              <input
+                name="Price"
+                value={form.Price}
+                onChange={onChange}
+                placeholder="PRICE"
+                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                type="number"
+              />
+              <input
+                name="Time"
+                value={form.Time}
+                onChange={onChange}
+                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                type="time"
+              />
+              <input
+                name="Date"
+                value={form.Date}
+                onChange={onChange}
+                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                type="date"
+              />
+              <div className="col-span-1 sm:col-span-2 flex gap-2 mt-2">
+                <button
+                  className="bg-teal-700 text-white px-4 py-2 rounded-md font-semibold hover:bg-teal-800 transition"
+                  type="submit"
+                >
+                  Save
+                </button>
+                <button
+                  className="bg-slate-700 text-white px-4 py-2 rounded-md font-semibold hover:bg-slate-800 transition"
+                  type="button"
+                  onClick={() => { setEditOpen(false); setSelectedExpense(null); }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

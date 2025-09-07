@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { AddExpense } from '../store/slicer/expenseSlice';
-import { object } from 'motion/react-client';
 
 const ContactExpense = ({ contact, user }) => {
 
@@ -69,62 +68,117 @@ const ContactExpense = ({ contact, user }) => {
     return (
         <div className="w-full flex justify-center items-center min-h-[200px] p-4">
             <AnimatePresence>
-                {Add ? (
-                    <motion.form
-                        key="expense-form"
-                        onSubmit={handleSubmit(onSubmit)}
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 40 }}
-                        transition={{ duration: 0.4 }}
-                        className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 flex flex-col gap-4"
+                {Add && (
+                    <Motion.div
+                        key="contact-expense-modal"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 flex items-center justify-center z-50 bg-black/30"
                     >
-                        <input {...register("Item")} placeholder='Description' className="bg-gray-100 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" type="text" />
-                        <input {...register("Price")} placeholder='Price' className="bg-gray-100 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" type="number" min="0" step="0.01" />
-                        <div className="flex gap-2 flex-col sm:flex-row">
-                            <input {...register("Date")} className="bg-gray-100 rounded px-3 py-2 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" type="date" />
-                            <input {...register("Time")} className="bg-gray-100 rounded px-3 py-2 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-400" type="time" />
-                        </div>
-                        <div className="flex gap-4 items-center flex-wrap">
-                            <span className="text-gray-700 text-sm">Paid By:</span>
-                            <label className="flex items-center gap-1">
-                                <input
-                                    {...register("paidBy")}
-                                    type="radio"
-                                    value={user?._id}
-                                    className="accent-blue-500"
+                        <Motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-200 flex flex-col gap-4 relative"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-gray-800 font-semibold">Add Contact Expense</h3>
+                            </div>
+                            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Motion.input
+                                    whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
+                                    whileHover={{ scale: 1.02 }}
+                                    placeholder="Description"
+                                    className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                                    type="text"
+                                    {...register("Item")}
                                 />
-                                <span className="text-gray-700 text-sm">{user?.name}</span>
-                            </label>
-                            <label className="flex items-center gap-1">
-                                <input
-                                    {...register("paidBy")}
-                                    type="radio"
-                                    value={contact?._id}
-                                    className="accent-blue-500"
+                                <Motion.input
+                                    whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
+                                    whileHover={{ scale: 1.02 }}
+                                    placeholder="Price"
+                                    className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    {...register("Price")}
                                 />
-                                <span className="text-gray-700 text-sm">{contact?.name}</span>
-                            </label>
-                        </div>
-                        <div className="flex gap-2 justify-end">
-                            <button type="button" onClick={() => setAdd(false)} className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition">Cancel</button>
-                            <button type="submit" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition">Add</button>
-                        </div>
-                    </motion.form>
-                ) : (
-                    <motion.button
-                        key="add-expense-btn"
-                        onClick={() => setAdd(true)}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.3 }}
-                        className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition w-full"
-                    >
-                        Add Expense
-                    </motion.button>
+                                <div className="relative">
+                                    <Motion.input
+                                        id="date"
+                                        placeholder=" "
+                                        className="peer border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                                        type="date"
+                                        {...register('Date')}
+                                        whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
+                                        whileHover={{ scale: 1.02 }}
+                                    />
+                                    <label htmlFor="date" className="absolute left-26 top-2 text-gray-500 pointer-events-none">DATE</label>
+                                </div>
+                                <div className="relative">
+                                    <Motion.input
+                                        id="time"
+                                        placeholder=" "
+                                        {...register('Time')}
+                                        className="peer border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                                        type="time"
+                                        whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
+                                        whileHover={{ scale: 1.02 }}
+                                    />
+                                    <label htmlFor="time" className="absolute left-24 top-2 text-gray-500 pointer-events-none">TIME</label>
+                                </div>
+                                <div className="sm:col-span-2 flex flex-wrap items-center gap-3 mt-1">
+                                    <span className="text-gray-700 text-sm">Paid by</span>
+                                    <label className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                                        <input {...register("paidBy")} type="radio" value={user?._id} className="accent-teal-600" />
+                                        <span className="text-gray-700 text-sm">{user?.name}</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
+                                        <input {...register("paidBy")} type="radio" value={contact?._id} className="accent-teal-600" />
+                                        <span className="text-gray-700 text-sm">{contact?.name}</span>
+                                    </label>
+                                </div>
+                                <div className="sm:col-span-2 flex flex-col sm:flex-row gap-2 mt-2">
+                                    <Motion.input
+                                        whileTap={{ scale: 0.97 }}
+                                        className="bg-teal-700 text-white px-4 py-2 w-full sm:w-auto rounded-md font-semibold shadow hover:bg-teal-800 transition text-sm sm:text-base"
+                                        type="submit"
+                                        value="Add Expense"
+                                    />
+                                    <Motion.button
+                                        whileTap={{ scale: 0.97 }}
+                                        className='bg-slate-700 text-white px-4 py-2 w-full sm:w-auto rounded-md font-semibold shadow hover:bg-slate-800 transition text-sm sm:text-base'
+                                        type="button"
+                                        onClick={() => setAdd(false)}
+                                    >
+                                        Cancel
+                                    </Motion.button>
+                                </div>
+                            </form>
+                            <Motion.button
+                                whileTap={{ scale: 0.97 }}
+                                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold focus:outline-none"
+                                onClick={() => setAdd(false)}
+                                aria-label="Close"
+                            >
+                                ×
+                            </Motion.button>
+                        </Motion.div>
+                    </Motion.div>
                 )}
             </AnimatePresence>
+            {!Add && (
+                <Motion.button
+                    key="add-expense-btn"
+                    whileTap={{ scale: 0.97 }}
+                    className='mb-2 bg-teal-700 text-white px-6 py-2 rounded-lg shadow font-bold flex items-center justify-center gap-2 hover:bg-teal-800 transition w-full'
+                    onClick={() => setAdd(true)}
+                >
+                    <span className="text-2xl">+</span> Add Expense
+                </Motion.button>
+            )}
         </div>
     )
 }

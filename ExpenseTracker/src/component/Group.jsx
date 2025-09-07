@@ -40,7 +40,7 @@ const Group = () => {
       const selectedGroup = Group.find((grp) => String(grp._id) === String(Show))
       
       const GroupExpense = Expense.filter(
-        (exp) => String(exp.Group._id) === String(Show)
+        (exp) => String(exp.Group?._id) === String(Show)
       )   
       console.log(GroupExpense, Show)
       dispatch(SetCurrent_Expense(GroupExpense))

@@ -43,7 +43,12 @@ const expense = new Expense({
         expense,
     })
   }
-    UserAccount()
+    
+    try {
+      await UserAccount(req, res);
+    } catch (accountError) {
+      console.error("Error updating user account:", accountError);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -75,11 +80,16 @@ export const getExpenses = async (req, res) => {
 };
 export const updateExpense = async (req, res, next) => {
   try {
-    const user = req.user;
-    const expenseId = req._id;
-    const { Members ,PaidBy, Date, Time, Item, Price } = req.body;
-    const User = Members.some((m)=>m._id===user)
-    if(User&&PaidBy==user){
+    const userId = req.user._id;
+    const expenseId = req.body._id;
+    const { Members ,PaidBy } = req.body;
+
+    const isMember = Array.isArray(Members)
+      ? Members.some((m) => String(m?._id || m) === String(userId))
+      : false;
+    const isPayer = String(PaidBy?._id || PaidBy) === String(userId);
+
+    if (isMember && isPayer) {
       const expense = await Expense.findOneAndUpdate(
         { _id: expenseId },
         req.body,
@@ -96,13 +106,13 @@ export const updateExpense = async (req, res, next) => {
         success: true,
         expense,
       });
-    }else if(User && PaidBy!==user){
+    } else if (isMember && !isPayer) {
       return res.status(404).json({
         message: "User not allowed",
         success: false,
       });  
     
-    }else{
+    } else {
         return res.status(404).json({
           message: "Unauthorised",
           success: false,

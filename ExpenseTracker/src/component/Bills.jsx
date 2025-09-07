@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setBills } from '../store/slicer/billslice';
 
 const Bills = () => {
+  const Bills = useSelector((state)=> state.Bills?.Bills)
+  console.log(Bills)
   const [upcomingBills, setUpcomingBills] = useState([]);
   const [pendingBills, setPendingBills] = useState([]);
   const [paidBills, setPaidBills] = useState([]);
@@ -17,7 +19,6 @@ const Bills = () => {
   const API = 'http://localhost:7000/Home/';
   const now = Date.now();
 
-  
   useEffect(() => {
     if (editBill) {
       reset({
@@ -62,7 +63,7 @@ const Bills = () => {
       });
       const data = await res.json();
       if (data.success) {
-        dispatch(setBills(data.Bill));
+        dispatch(setBills([...data.Bill]));
         categorizeBills(data.Bill);
       }
     } catch (error) {
@@ -73,7 +74,6 @@ const Bills = () => {
   useEffect(() => {
     fetchBills();
   }, [])
-  
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {

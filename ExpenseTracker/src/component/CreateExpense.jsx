@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useSelector, useDispatch } from 'react-redux'
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion'
 import { AddExpense } from '../store/slicer/expenseSlice'
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense'
@@ -61,7 +62,6 @@ const CreatExpense = () => {
       if (data.success && data.expenses) {
         dispatch(AddExpense(data.expenses))
         
-        // Update current group expenses if we're in a group
         if (Current_Group?._id) {
           const groupExpenses = data.expenses.filter(exp => String(exp.Group._id) === String(Current_Group._id))
           dispatch(SetCurrent_Expense(groupExpenses))

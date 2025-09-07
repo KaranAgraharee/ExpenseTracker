@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setContacts } from '../store/slicer/ContactSlice'
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import ContactExpense from './ContactExpense';
 
 const Contact = () => {
@@ -19,6 +19,7 @@ const Contact = () => {
   const [GroupExpense, setGroupExpense] = useState([])
   const [NonGroupExpense, setNonGroupExpense] = useState([])
   const [Contact, setContact] = useState([])
+  const [pid, setpid] = useState('')
 
 
   useEffect(() => {
@@ -49,36 +50,33 @@ const Contact = () => {
   }, [currentUser, dispatch])
 
   const ExpenseShow = (person) => {
-
-    const Pid = person._id;
+    if (!person || !person._id) return;
+    const selectedPersonId = person._id?.toString?.()
+    setpid(selectedPersonId)
+    const currentUserId = currentUser?._id?.toString?.() || currentUser?._id;
 
     setContact(person)
 
-    const groupExps = expenses.filter(
-      (exp) =>
-        exp.Group.GroupName &&(exp.PaidBy._id === Pid ||
-          exp.PaidBy._id === currentUser._id)
-    )
+    const groupExps = expenses.filter((exp) => {
+      if (!exp?.Group) return false;
+      const members = Array.isArray(exp?.Members) ? exp.Members : [];
+      const includesSelected = members.some((m) => (m?._id?.toString?.() || m?._id) === selectedPersonId);
+      const includesCurrent = members.some((m) => (m?._id?.toString?.() || m?._id) === currentUserId);
+      return includesSelected && includesCurrent;
+    })
 
-    const nonGroupExps = expenses.filter(
-      (exp) =>
-        (exp.PaidBy._id === Pid ||
-          exp.PaidBy._id === currentUser._id) &&
-        (!exp.Group) &&
-        (!exp.Group && exp.Members && exp.Members.length === 2)
-    );
+    const nonGroupExps = expenses.filter((exp) => {
+      if (exp?.Group) return false;
+      const members = Array.isArray(exp?.Members) ? exp.Members : [];
+      if (members.length !== 2) return false;
+      const includesSelected = members.some((m) => (m?._id?.toString?.() || m?._id) === selectedPersonId);
+      const includesCurrent = members.some((m) => (m?._id?.toString?.() || m?._id) === currentUserId);
+      return includesSelected && includesCurrent;
+    })
 
     setGroupExpense(groupExps);
     setNonGroupExpense(nonGroupExps);
-
   }
-  useEffect(() => {
-    try {
-      ExpenseShow()
-    } catch (error) {
-      console.log("contact expense of member is not loding", error)
-    }
-  }, [expenses, GroupExpense, NonGroupExpense]);
 
   const filtered = useMemo(() => {
     if (!search?.trim()) return contacts
@@ -87,7 +85,7 @@ const Contact = () => {
       const memberTexts = (c?.Users || []).map((u) => `${u?.name || ''} ${u?.email || ''}`.toLowerCase())
       return memberTexts.some((t) => t.includes(query))
     })
-  }, [contacts, search])
+  }, [contacts, search, selectedIndex])
 
   useEffect(() => {
     if (selectedIndex >= filtered.length) {
@@ -95,25 +93,22 @@ const Contact = () => {
     }
   }, [filtered, selectedIndex])
 
-  const selected = filtered[selectedIndex] || null
+  const selected = filtered[selectedIndex] 
   const otherMembers = useMemo(() => {
     if (!selected?.Users) return []
     const currentId = currentUser?._id?.toString()
     return selected.Users.filter((u) => u?._id?.toString() !== currentId)
   }, [selected, currentUser])
 
-  const formatCurrency = (n) => {
-    const num = Number(n || 0)
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(num)
-  }
+  
 
   console.log(expenses)
 
   return (
     <div className="min-h-screen sm:p-8 text-white">
-      <div className="max-w-7xl mx-auto grid grid-cols-1  md:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left panel: search + list */}
-        <div
+        <Motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
@@ -139,7 +134,7 @@ const Contact = () => {
           ) : filtered.length === 0 ? (
             <div className="text-slate-300 text-sm">No contacts found.</div>
           ) : (
-            <ul className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+            <ul className="space-y-3 max-h-[72vh] overflow-y-auto pr-1">
               {filtered.map((c, idx) => {
                 const currentId = currentUser?._id?.toString()
                 const members = (c?.Users || []).filter((u) => u?._id?.toString() !== currentId)
@@ -151,9 +146,9 @@ const Contact = () => {
                     <button
                       onClick={() => {
                         setSelectedIndex(idx)
-                        ExpenseShow(...members)
+                        ExpenseShow(members[0])
                       }}
-                      className={`w-full text-left p-3 rounded-xl border transition ${isActive ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-700/60 border-slate-600 hover:bg-slate-700'
+                      className={`w-full text-left p-3 rounded-xl border transition ring-1 ring-transparent hover:ring-blue-400/40 ${isActive ? 'bg-blue-600/20 border-blue-500' : 'bg-slate-700/60 border-slate-600 hover:bg-slate-700'
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -177,19 +172,19 @@ const Contact = () => {
               })}
             </ul>
           )}
-        </div>
+        </Motion.div>
 
         {/* Right panel: details */}
-        <div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="md:col-span-2 bg-slate-800/70 border border-slate-700 rounded-2xl shadow-xl p-5 backdrop-blur-sm"
+          className="md:col-span-2 pr-4 md:pr-16 bg-slate-800/70 border border-slate-700 rounded-2xl shadow-xl p-5 backdrop-blur-sm"
         >
           {!selected ? (
             <div className="text-slate-300">Select a contact to view details.</div>
           ) : (
-            <div className="h-full w-full flex lg:flex-col md:flex-row sm:flex-row">
+            <div className="h-full w-full flex">
               {/* Left: Expense Tabs & Content */}
               <div className="w-full md:w-2/3 flex flex-col">
                 {/* Tabs */}
@@ -214,12 +209,12 @@ const Contact = () => {
                       <div className="text-slate-300 text-sm">No group expenses yet.</div>
                     ) : (
                       <ul className="relative">
-                        <div className="relative bg-gradient-to-br from-amber-100/80 to-green-100/80 shadow-lg lg:h-[85vh] overflow-y-scroll  p-4 w-96">
+                        <div className="relative bg-gradient-to-br from-amber-100/80 to-green-100/80 shadow-lg rounded-xl lg:h-[85vh] sm:overflow-y-auto overflow-y-auto p-4 w-full md:w-96">
                           <AnimatePresence>
-                            {GroupExpense.map((exp, idx) => {
+                            {GroupExpense && GroupExpense.filter((exp)=>exp.PaidBy._id===currentUser._id||exp.PaidBy._id===pid).map((exp, idx) => {
                               const isCurrentUser = exp.PaidBy._id === currentUser._id
                               return (
-                                <motion.li
+                                <Motion.li
                                   key={exp._id}
                                   initial={{ opacity: 0, y: 20 }}
                                   animate={{ opacity: 1, y: 0 }}
@@ -268,7 +263,7 @@ const Contact = () => {
                                       Contact Paid
                                     </span>
                                   )}
-                                </motion.li>
+                                </Motion.li>
                               );
                             })}
                           </AnimatePresence>
@@ -278,14 +273,16 @@ const Contact = () => {
                   </div>
                 ) : (
                   <div className="">
-                    {(selected?.NonGroupExpense || []).length === 0 ? (
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 h-[85vh] gap-6">
-                        <div className="relative bg-gradient-to-br from-green-100/80 to-amber-100/80 shadow-lg lg:h-[vh] overflow-y-scroll rounded-xl p-4 w-96">
+                    {NonGroupExpense.length === 0 ? (
+                      <div className="text-slate-300 text-sm">No non‑group expenses yet.</div>
+                    ) : (
+                      <ul className="relative">
+                        <div className="relative bg-gradient-to-br from-green-100/80 to-amber-100/80 shadow-lg rounded-xl lg:h-[85vh] overflow-y-auto p-4 w-full md:w-96">
                           <AnimatePresence>
-                            {GroupExpense.map((exp, idx) => {
+                            {NonGroupExpense.filter().map((exp, idx) => {
                               const isCurrentUser = exp.PaidBy._id === currentUser._id
                               return (
-                                <motion.li
+                                <Motion.li
                                   key={exp._id}
                                   initial={{ opacity: 0, y: 20 }}
                                   animate={{ opacity: 1, y: 0 }}
@@ -297,7 +294,7 @@ const Contact = () => {
                                   }}
                                   className={`
                                     relative flex flex-col justify-between
-                                    rounded-2xl shadow-md px-2 min-w-[260px] max-w-sm
+                                    rounded-2xl shadow-md p-2 min-w-76 max-w-84
                                     transition-all duration-200 my-1
                                     ${isCurrentUser
                                       ? "bg-gradient-to-r from-green-300/95  to-green-200/75 rounded-br-none ml-12"
@@ -311,7 +308,8 @@ const Contact = () => {
                                     <div className="text-center font-bold text-xl text-green-800 break-words">
                                       {exp.Item}
                                     </div>
-                                    <div className="flex justify-center items-center text-base font-medium text-green-900">
+                                    <div className="flex justify-between items-center text-base font-medium text-green-900">
+                                      <span className="truncate">Personal</span>
                                       <span className="bg-green-300/80 px-4 py-1 rounded-full shadow-inner text-sm font-semibold">
                                         ₹{exp.Price}
                                       </span>
@@ -333,22 +331,21 @@ const Contact = () => {
                                       Contact Paid
                                     </span>
                                   )}
-                                </motion.li>
+                                </Motion.li>
                               );
                             })}
                           </AnimatePresence>
                         </div>
                       </ul>
-                    ) : (
-                      <div className="text-slate-300 text-sm">No non‑group expenses yet.</div>
                     )}
                   </div>
                 )}
+                {/* Contact Expense Detail moved to left side */}
               </div>
               {/* Right: Contact Details */}
               {
-                Contact && Contact.length !== 0 && <div>
-                  <div className="w-full flex flex-col  items-center justify-start gap-4 h-full">
+                Contact && Contact._id && <div className="w-full md:w-1/3">
+                  <div className=" flex flex-col  items-center justify-start gap-4 h-full">
                     {/* Contact Name & Emails */}
                     <div className="bg-slate-700/70 rounded-xl p-4 mb-2 shadow mx-auto">
                       <div className="text-2xl font-bold text-center text-blue-200 mb-1">
@@ -372,23 +369,23 @@ const Contact = () => {
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">₹{selected?.GroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">{selected?.GroupExpense?.length || 0}</div>
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Non‑Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">₹{selected?.NonGroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">{selected?.NonGroupExpense?.length || 0}</div>
                       </div>
                     </div>
-                    <ContactExpense
-                      contact={Contact}
-                      user={currentUser}
-                    />
+                  <ContactExpense
+                    contact={Contact}
+                    user={currentUser}
+                  />
                   </div>
                 </div>
               }
             </div>
           )}
-        </div>
+        </Motion.div>
       </div>
     </div>
   )

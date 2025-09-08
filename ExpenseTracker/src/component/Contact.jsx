@@ -20,6 +20,8 @@ const Contact = () => {
   const [NonGroupExpense, setNonGroupExpense] = useState([])
   const [Contact, setContact] = useState([])
   const [pid, setpid] = useState('')
+  const [totalGroupSpending, settotalGroupSpending] = useState(0)
+  const [totalNonGroupSpending, settotalNonGroupSpending] = useState(0)
 
 
   useEffect(() => {
@@ -60,24 +62,37 @@ const Contact = () => {
     const groupExps = expenses.filter((exp) => {
       if (!exp?.Group) return false;
       const members = Array.isArray(exp?.Members) ? exp.Members : [];
-      const includesSelected = members.some((m) => (m?._id?.toString?.() || m?._id) === selectedPersonId);
-      const includesCurrent = members.some((m) => (m?._id?.toString?.() || m?._id) === currentUserId);
-      return includesSelected && includesCurrent;
+      const ensurePerson = members.some((m) =>{ 
+        return((m?._id?.toString?.() || m?._id) === selectedPersonId)
+               })
+      const ensureUser = members.some((m) =>{ 
+        return((m?._id?.toString?.() || m?._id) === currentUserId)
+      })
+      const Include = exp.PaidBy?._id === selectedPersonId || exp.PaidBy?._id === currentUserId
+      return ensurePerson && ensureUser && Include
     })
 
     const nonGroupExps = expenses.filter((exp) => {
       if (exp?.Group) return false;
       const members = Array.isArray(exp?.Members) ? exp.Members : [];
       if (members.length !== 2) return false;
-      const includesSelected = members.some((m) => (m?._id?.toString?.() || m?._id) === selectedPersonId);
-      const includesCurrent = members.some((m) => (m?._id?.toString?.() || m?._id) === currentUserId);
-      return includesSelected && includesCurrent;
+      const ensurePerson = members.some((m) =>{ 
+        return((m?._id?.toString?.() || m?._id) === selectedPersonId)
+               })
+      const ensureUser = members.some((m) =>{ 
+        return((m?._id?.toString?.() || m?._id) === currentUserId)
+      })
+      const Include = exp.PaidBy?._id === selectedPersonId || exp.PaidBy?._id === currentUserId
+      return ensurePerson && ensureUser && Include
     })
-
-    setGroupExpense(groupExps);
-    setNonGroupExpense(nonGroupExps);
+    const GroupSpending = groupExps.filter((g)=>g.PaidBy._Id===pid||g.PaidBy._id===currentUser._id).reduce((s,e)=>s+e.Price,0)
+    const nonGroupSpending = nonGroupExps.filter((g)=>g.PaidBy._Id===pid||g.PaidBy._id===currentUser._id).reduce((s,e)=>s+e.Price,0)
+    settotalGroupSpending(GroupSpending)
+    settotalNonGroupSpending(nonGroupSpending)
+    setGroupExpense(groupExps)
+    setNonGroupExpense(nonGroupExps)
   }
-
+  console.log(GroupExpense)
   const filtered = useMemo(() => {
     if (!search?.trim()) return contacts
     const query = search.trim().toLowerCase()
@@ -93,21 +108,20 @@ const Contact = () => {
     }
   }, [filtered, selectedIndex])
 
-  const selected = filtered[selectedIndex] 
+  const selected = filtered[selectedIndex]
   const otherMembers = useMemo(() => {
     if (!selected?.Users) return []
     const currentId = currentUser?._id?.toString()
     return selected.Users.filter((u) => u?._id?.toString() !== currentId)
   }, [selected, currentUser])
 
-  
+
 
   console.log(expenses)
 
   return (
     <div className="min-h-screen sm:p-8 text-white">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left panel: search + list */}
         <Motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -153,17 +167,11 @@ const Contact = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-semibold">
-                          {(title?.[0]||'C').toUpperCase()}
+                          {(title?.[0] || 'C').toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-medium truncate">{title}</div>
                           <div className="text-xs text-slate-300 truncate">{subtitle}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs text-slate-300">Total</div>
-                          <div className="font-semibold">
-                            {(c?.totalGroupSpending || 0) + (c?.totalNonGroupSpending || 0)}
-                          </div>
                         </div>
                       </div>
                     </button>
@@ -211,7 +219,7 @@ const Contact = () => {
                       <ul className="relative">
                         <div className="relative bg-gradient-to-br from-amber-100/80 to-green-100/80 shadow-lg rounded-xl lg:h-[85vh] sm:overflow-y-auto overflow-y-auto p-4 w-full md:w-96">
                           <AnimatePresence>
-                            {GroupExpense && GroupExpense.filter((exp)=>exp.PaidBy._id===currentUser._id||exp.PaidBy._id===pid).map((exp, idx) => {
+                            {GroupExpense && GroupExpense.map((exp, idx) => {
                               const isCurrentUser = exp.PaidBy._id === currentUser._id
                               return (
                                 <Motion.li
@@ -279,7 +287,7 @@ const Contact = () => {
                       <ul className="relative">
                         <div className="relative bg-gradient-to-br from-green-100/80 to-amber-100/80 shadow-lg rounded-xl lg:h-[85vh] overflow-y-auto p-4 w-full md:w-96">
                           <AnimatePresence>
-                            {NonGroupExpense.filter().map((exp, idx) => {
+                            {NonGroupExpense.map((exp, idx) => {
                               const isCurrentUser = exp.PaidBy._id === currentUser._id
                               return (
                                 <Motion.li
@@ -361,25 +369,25 @@ const Contact = () => {
                     <div className="grid grid-cols-2 gap-3 mx-auto">
                       <div className="bg-gradient-to-br from-green-400/20 to-green-200/10 rounded-xl p-4 text-center shadow hover:scale-105 transition">
                         <div className="text-xs text-slate-400 mb-1">Group Total</div>
-                        <div className="font-bold text-green-700 text-lg">₹{selected?.totalGroupSpending} </div>
+                        <div className="font-bold text-green-700 text-lg">₹{totalGroupSpending} </div>
                       </div>
                       <div className="bg-gradient-to-br from-amber-400/20 to-amber-200/10 rounded-xl p-4 text-center shadow hover:scale-105 transition">
                         <div className="text-xs text-slate-400 mb-1">Non‑Group Total</div>
-                        <div className="font-bold text-amber-700 text-lg">₹{selected?.totalNonGroupSpending} </div>
+                        <div className="font-bold text-amber-700 text-lg">₹{totalNonGroupSpending} </div>
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">{selected?.GroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">{GroupExpense?.length}</div>
                       </div>
                       <div className="bg-slate-700/60 rounded-xl p-4 text-center shadow">
                         <div className="text-xs text-slate-400 mb-1">Non‑Group Count</div>
-                        <div className="font-semibold text-blue-200 text-lg">{selected?.NonGroupExpense?.length || 0}</div>
+                        <div className="font-semibold text-blue-200 text-lg">{NonGroupExpense?.length}</div>
                       </div>
                     </div>
-                  <ContactExpense
-                    contact={Contact}
-                    user={currentUser}
-                  />
+                    <ContactExpense
+                      contact={Contact}
+                      user={currentUser}
+                    />
                   </div>
                 </div>
               }
@@ -387,7 +395,7 @@ const Contact = () => {
           )}
         </Motion.div>
       </div>
-    </div>
+    </div >
   )
 }
 

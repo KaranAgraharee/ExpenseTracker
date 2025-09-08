@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import { useSelector, useDispatch } from 'react-redux'
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion'
-import { AddExpense } from '../store/slicer/expenseSlice'
+import { AddExpense, SetExpense } from '../store/slicer/expenseSlice'
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense'
 
 const CreatExpense = () => {
@@ -53,22 +53,40 @@ const CreatExpense = () => {
 
   const refetchExpenses = async () => {
     try {
+      console.log('Refetching expenses...')
       const res = await fetch('http://localhost:7000/Home/expense', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
       })
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`)
+      }
+      
       const data = await res.json()
+      console.log('API Response:', data)
+      
       if (data.success && data.expenses) {
-        dispatch(AddExpense(data.expenses))
+        console.log('Dispatching SetExpense with:', data.expenses)
+        dispatch(SetExpense(data.expenses))
         
         if (Current_Group?._id) {
-          const groupExpenses = data.expenses.filter(exp => String(exp.Group._id) === String(Current_Group._id))
+          console.log('Current Group ID:', Current_Group._id)
+          const groupExpenses = data.expenses.filter(exp => {
+            const hasGroup = exp.Group && exp.Group._id
+            const matchesGroup = hasGroup && String(exp.Group._id) === String(Current_Group._id)
+            console.log('Expense Group ID:', exp.Group?._id, 'Matches:', matchesGroup)
+            return matchesGroup
+          })
+          console.log('Filtered group expenses:', groupExpenses)
           dispatch(SetCurrent_Expense(groupExpenses))
         }
+      } else {
+        console.log('API response indicates failure or no expenses:', data)
       }
     } catch (error) {
-      console.log('Error refetching expenses:', error)
+      console.error('Error refetching expenses:', error)
     }
   }
 
@@ -151,7 +169,7 @@ const CreatExpense = () => {
                     {Current_Group && Current_Group.members && Current_Group.members.length > 0 ? (
                       <select
                         {...register("paidBy")}
-                        className="border rounded px-2 py-1 text-sm mr-2 w-full"
+                        className="border rounded px-2 py-1 text-sm mr-2 w-full text-gray-800 bg-white"
                         defaultValue={user._id}
                       >
                         {Current_Group.members.map((member) => (

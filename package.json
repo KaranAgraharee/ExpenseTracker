@@ -4,7 +4,8 @@
   "description": "The Expense tracker help you to track your daily expense, manage the your finances. Make your daily life easy. ",
   "main": "index.js",
   "scripts": {
-    "test": "concurrently \"cd ExpenseTracker && npm run dev\" \"cd backend && nodemon server.js\""
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"   
   },
   "author": "Karan Agrahari",
   "license": "ISC",
@@ -15,5 +16,6 @@
     "@tailwindcss/vite": "^4.1.10",
     "motion": "^12.18.1",
     "tailwindcss": "^4.1.10"
-  }
+  },
+  "homepage": "https://<username>.github.io/<repo-name>"
 }

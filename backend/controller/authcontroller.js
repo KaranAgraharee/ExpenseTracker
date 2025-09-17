@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import { UserModel } from "../model/User.js"
 import { SendVerificationCOde } from "../middleware/email.js"
 import crypto from 'crypto'

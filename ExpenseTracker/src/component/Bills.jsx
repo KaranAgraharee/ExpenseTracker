@@ -16,7 +16,7 @@ const Bills = () => {
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const dispatch = useDispatch();
-  const API = 'http://localhost:7000/Home/';
+  const API = 'https://expense-trackerapi.vercel.app/Home/';
   const now = Date.now();
 
   useEffect(() => {

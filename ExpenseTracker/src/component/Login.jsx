@@ -12,8 +12,9 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         setIsLoading(true)
+        console.log(data)
         try {
-            const res = await fetch('http://localhost:7000/auth/login', {
+            const res = await fetch('https://expense-trackerapi.vercel.app/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

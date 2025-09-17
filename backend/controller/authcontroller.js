@@ -48,8 +48,9 @@ export const signup = async (req, res) => {
     res.cookie("Auth_Token", jwttoken, {
       httpOnly: true,
       maxAge: 7200000,
-      secure: false,
-      sameSite: "Lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
     });
 
     res.status(201).json({
@@ -123,6 +124,7 @@ export const verifyOTP = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password)
     const user = await UserModel.findOne({ email })
     const errormessage = "Password is wrong"
     if (!user) {
@@ -148,8 +150,9 @@ export const login = async (req, res) => {
     res.cookie("Auth_Token", jwttoken, {
       httpOnly: true,
       maxAge: 7200000,
-      secure: false,
-      sameSite: "Lax",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
     });
     res.status(200).json({
       message: "Login sucessfully",
@@ -180,7 +183,12 @@ export const getProfile = async (req, res, next) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("Auth_Token")
+    res.clearCookie("Auth_Token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
+    })
     res.status(200).json({
       success: true,
       message: 'Logout successFully',

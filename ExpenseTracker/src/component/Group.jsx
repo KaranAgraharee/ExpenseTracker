@@ -18,7 +18,7 @@ const Group = () => {
 
   useEffect(() => {
     const groupData = async () => {
-      const res = await fetch('http://localhost:7000/Home/group', {
+      const res = await fetch('https://expense-trackerapi.vercel.app/Home/group', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'

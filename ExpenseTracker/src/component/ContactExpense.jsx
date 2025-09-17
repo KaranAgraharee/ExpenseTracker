@@ -14,7 +14,7 @@ const ContactExpense = ({ contact, user }) => {
 
     const refetchExpenses = async () => {
         try {
-            const res = await fetch('http://localhost:7000/Home/expense', {
+            const res = await fetch('https://expense-trackerapi.vercel.app/Home/expense', {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -40,7 +40,7 @@ const ContactExpense = ({ contact, user }) => {
                 Members: [contact, UserData],
             }
             console.log(expensedata)
-            const response = await fetch('http://localhost:7000/Home/expense', {
+            const response = await fetch('https://expense-trackerapi.vercel.app/Home/expense', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

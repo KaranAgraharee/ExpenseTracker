@@ -30,7 +30,7 @@ const CreateGrp = () => {
     
     setquery(value);
     if (value.length > 3) {
-      const response = await fetch(`http://localhost:7000/Auth/user/search?query=${value}`, {
+      const response = await fetch(`https://expense-trackerapi.vercel.app/Auth/user/search?query=${value}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ const CreateGrp = () => {
         members: updatedMembers,
       }
       console.log('Sending group data:', groupData)
-      const res = await fetch('http://localhost:7000/Home/group', {
+      const res = await fetch('https://expense-trackerapi.vercel.app/Home/group', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

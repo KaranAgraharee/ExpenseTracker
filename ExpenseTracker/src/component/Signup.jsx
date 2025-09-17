@@ -38,10 +38,9 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
     setIsLoading(true)
     setError('')
     try {
-      console.log(email)
       const otpnum = Number(otpString)
       const timeout = Date.now() + 10 * 60 * 1000
-      const res = await fetch('http://localhost:7000/auth/verify-otp', {
+      const res = await fetch('https://expense-trackerapi.vercel.app/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, otp: otpnum, timeout })
@@ -56,7 +55,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
       // 2. Register user after OTP is verified
       const signupPayload = { ...signupData }
       delete signupPayload.confirmPassword
-      const signupRes = await fetch('http://localhost:7000/auth/signup', {
+      const signupRes = await fetch('https://expense-trackerapi.vercel.app/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signupPayload),
@@ -78,7 +77,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
   const resendOTP = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch('http://localhost:7000/auth/send-otp', {
+      const res = await fetch('https://expense-trackerapi.vercel.app/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -204,7 +203,7 @@ const SignUp = () => {
     setIsSubmitting(true)
     try {
       // Send OTP only
-      const res = await fetch('http://localhost:7000/auth/send-otp', {
+      const res = await fetch('https://expense-trackerapi.vercel.app/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email })
@@ -213,10 +212,10 @@ const SignUp = () => {
         setSignupData(data)
         setShowOTP(true)
       } else {
-        // handle error (e.g. show error message)
+        console.log('server Error')
       }
     } catch (error) {
-      // handle error (e.g. show error message)
+        console.log(error) 
     } finally {
       setIsSubmitting(false)
     }

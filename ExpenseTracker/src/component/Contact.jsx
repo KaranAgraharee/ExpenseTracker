@@ -29,7 +29,7 @@ const Contact = () => {
       try {
         setLoading(true)
         setError('')
-        const res = await fetch('http://localhost:7000/Home/contacts', {
+        const res = await fetch('https://expense-trackerapi.vercel.app/Home/contacts', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

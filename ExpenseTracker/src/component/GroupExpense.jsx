@@ -21,7 +21,7 @@ const GroupExpense = ({ group, expenses, user }) => {
   
   const [selectedFilter, setSelectedFilter] = useState('All')
   const dispatch = useDispatch()
-  const API = 'http://localhost:7000/Home/'
+  const API = 'https://expense-trackerapi.vercel.app/Home/'
   const [editOpen, setEditOpen] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState(null)
   const [form, setForm] = useState({ Item: '', Price: '', Date: '', Time: '' })

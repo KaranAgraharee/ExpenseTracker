@@ -96,7 +96,7 @@ const Budgets = () => {
   const UpdateBudget = async (e) => {
     try {
       const amount = e.currentTarget.value
-      const res = await fetch('http://localhost:7000/auth/set_budget',{
+      const res = await fetch('https://expense-trackerapi.vercel.app/auth/set_budget',{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

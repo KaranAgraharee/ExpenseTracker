@@ -16,15 +16,16 @@ import { SetExpense } from '../store/slicer/expenseSlice'
 import { setBills } from '../store/slicer/billslice'
 import { setBudget } from '../store/slicer/Budgetslice'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const Home = () => {
-  const API = 'http://localhost:7000/Home/'
   const dispatch = useDispatch()
   const open = useSelector((state) => state.navButton?.component)
   const user = useSelector((state) => state.user?.user)
   const Current_Expense = useSelector((state) => state.Current_Expense?.Current_Expense)
   const navigate = useNavigate()
   useEffect(() => {
-    fetch('http://localhost:7000/auth/verify-user', {
+    fetch('https://expense-trackerapi.vercel.app/auth/verify-user', {
       method: "GET",
       credentials: 'include'
     })
@@ -56,7 +57,7 @@ const Home = () => {
     useEffect(() => {
       const Get_Expense = async () => {
         try {
-          const res = await fetch(`${API}expense`, {
+          const res = await fetch(`${API}/Home/expense`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -86,7 +87,7 @@ const Home = () => {
     useEffect(() => {
     const fetchBills = async () => {
       try {
-        const res = await fetch(`${API}getBill`, {
+        const res = await fetch(`${API}/Home/getBill`, {
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
           method: 'GET',
@@ -112,7 +113,7 @@ const Home = () => {
   }, [user, dispatch, API])
   const Logout = async () => {
     try {
-      const res= await fetch('http://localhost:7000/auth/logout', {
+      const res= await fetch('https://expense-trackerapi.vercel.app/auth/logout', {
         method: "GET",
         credentials: 'include'
       })

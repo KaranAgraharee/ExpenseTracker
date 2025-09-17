@@ -92,7 +92,7 @@ export const sendOtp = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { email, otp, timeOut } = req.body;
+    const { email, otp, timeOut } = req.body
     const user = await UserModel.findOne({ email });
     if (user) {
       return res.status(404).json({
@@ -129,6 +129,8 @@ export const login = async (req, res) => {
       return res.status(409).json({
         message: "User not found",
         success: false,
+        email,
+        password,
       });
     }
     const isPassEqual = await bcrypt.compare(password, user.password);
@@ -191,3 +193,4 @@ export const logout = async (req, res) => {
     })
   }
 };
+

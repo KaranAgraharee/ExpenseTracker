@@ -38,8 +38,17 @@ app.use('/Home', ExpenseRouter)
 app.use('/Home', ContactRouter)
 app.use('/Home', BillRouter)
 
-
-
+// Root route handler
+app.get('/', (req, res) => {
+    res.json({ 
+        message: 'Expense Tracker API is running!', 
+        status: 'success',
+        endpoints: {
+            auth: '/auth',
+            home: '/Home'
+        }
+    })
+})
 
 app.listen(port, () =>{
     console.log(`server running on port ${port}`)

@@ -12,7 +12,6 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         setIsLoading(true)
-        console.log(data)
         try {
             const res = await fetch('https://expense-trackerapi.vercel.app/auth/login', {
                 method: 'POST',

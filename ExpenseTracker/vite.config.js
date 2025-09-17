@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
 
-// https://vite.dev/config/
 export default defineConfig({
-  base: '/',
-  plugins: [react(),
-    tailwindcss(),
-    autoprefixer: {},
-  ],
+  plugins: [react()],
   css: {
-    transformer: 'postcss',
+    // Disable lightningcss explicitly
+    transformer: 'postcss'
   },
+  esbuild: {
+    // In case lightningcss sneaks in via esbuild
+    legalComments: 'none'
+  }
 })

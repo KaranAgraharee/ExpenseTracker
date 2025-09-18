@@ -131,8 +131,6 @@ export const login = async (req, res) => {
       return res.status(409).json({
         message: "User not found",
         success: false,
-        email,
-        password,
       });
     }
     const isPassEqual = await bcrypt.compare(password, user.password);
@@ -163,7 +161,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Internal server error",
+      message: "Internal server error function m error aa rha",
       success: false,
     });
   }
@@ -201,4 +199,5 @@ export const logout = async (req, res) => {
     })
   }
 };
+
 

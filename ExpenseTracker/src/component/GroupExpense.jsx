@@ -21,7 +21,7 @@ const GroupExpense = ({ group, expenses, user }) => {
   
   const [selectedFilter, setSelectedFilter] = useState('All')
   const dispatch = useDispatch()
-  const API = 'https://expense-trackerapi.vercel.app/Home/'
+  const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
   const [editOpen, setEditOpen] = useState(false)
   const [selectedExpense, setSelectedExpense] = useState(null)
   const [form, setForm] = useState({ Item: '', Price: '', Date: '', Time: '' })
@@ -110,7 +110,7 @@ const GroupExpense = ({ group, expenses, user }) => {
         Members: (selectedExpense.Members || []).map(m => m._id || m),
         PaidBy: selectedExpense.PaidBy?._id || selectedExpense.PaidBy
       }
-      const res = await fetch(`${API}expense`, {
+      const res = await fetch(`${API}/Home/expense`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

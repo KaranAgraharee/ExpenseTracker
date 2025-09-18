@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
     const navigate = useNavigate()
@@ -13,7 +15,7 @@ const Login = () => {
     const onSubmit = async (data) => {
         setIsLoading(true)
         try {
-            const res = await fetch('https://expense-trackerapi.vercel.app/auth/login', {
+            const res = await fetch(`${API}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

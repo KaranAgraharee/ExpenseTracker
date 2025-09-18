@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AnimatePresence, motion } from 'framer-motion'
 import { setBudget } from '../store/slicer/Budgetslice'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const Budgets = () => {
   const dispatch = useDispatch()
 
@@ -96,7 +98,7 @@ const Budgets = () => {
   const UpdateBudget = async (e) => {
     try {
       const amount = e.currentTarget.value
-      const res = await fetch('https://expense-trackerapi.vercel.app/auth/set_budget',{
+      const res = await fetch(`${API}/auth/set_budget`,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

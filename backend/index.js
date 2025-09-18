@@ -31,6 +31,7 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     process.env.FRONTEND_URL,
+    'https://expense-tracker-frontend.vercel.app', // Add your frontend Vercel URL here
 ].filter(Boolean)
 
 app.use(cors({
@@ -38,6 +39,8 @@ app.use(cors({
         // allow REST tools or same-origin requests with no Origin header
         if (!origin) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
+        // Allow Vercel subdomains
+        if (origin && origin.endsWith('.vercel.app')) return callback(null, true)
         return callback(new Error(`CORS not allowed for origin: ${origin}`))
     },
     credentials: true,

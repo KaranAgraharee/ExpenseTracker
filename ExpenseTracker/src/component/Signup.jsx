@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import {useNavigate} from 'react-router-dom'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) => {
   const navigate = useNavigate()
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
@@ -40,7 +42,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
     try {
       const otpnum = Number(otpString)
       const timeout = Date.now() + 10 * 60 * 1000
-      const res = await fetch('https://expense-trackerapi.vercel.app/auth/verify-otp', {
+      const res = await fetch(`${API}/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, otp: otpnum, timeout })
@@ -55,7 +57,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
       // 2. Register user after OTP is verified
       const signupPayload = { ...signupData }
       delete signupPayload.confirmPassword
-      const signupRes = await fetch('https://expense-trackerapi.vercel.app/auth/signup', {
+      const signupRes = await fetch(`${API}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signupPayload),
@@ -77,7 +79,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
   const resendOTP = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch('https://expense-trackerapi.vercel.app/auth/send-otp', {
+      const res = await fetch(`${API}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -203,7 +205,7 @@ const SignUp = () => {
     setIsSubmitting(true)
     try {
       // Send OTP only
-      const res = await fetch('https://expense-trackerapi.vercel.app/auth/send-otp', {
+      const res = await fetch(`${API}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email })

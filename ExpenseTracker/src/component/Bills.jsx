@@ -16,7 +16,7 @@ const Bills = () => {
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const dispatch = useDispatch();
-  const API = 'https://expense-trackerapi.vercel.app/Home/';
+  const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app';
   const now = Date.now();
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Bills = () => {
   
   const fetchBills = useCallback(async () => {
     try {
-      const res = await fetch(`${API}getBill`, {
+      const res = await fetch(`${API}/Home/getBill`, {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         method: 'GET',
@@ -77,7 +77,7 @@ const Bills = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      const url = editBill ? `${API}UpdateBill` : `${API}CreateBill`;
+      const url = editBill ? `${API}/Home/UpdateBill` : `${API}/Home/CreateBill`;
       const method = editBill ? 'PUT' : 'POST';
       const body = editBill ? { ...data, _id: editBill._id } : data;
       
@@ -109,7 +109,7 @@ const Bills = () => {
   const handleDelete = async (bill) => {
     if (!window.confirm('Delete this bill?')) return;
     try {
-      const res = await fetch(`${API}deleteBill`, {
+      const res = await fetch(`${API}/Home/deleteBill`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -25,7 +25,7 @@ const Home = () => {
   const Current_Expense = useSelector((state) => state.Current_Expense?.Current_Expense)
   const navigate = useNavigate()
   useEffect(() => {
-    fetch('https://expense-trackerapi.vercel.app/auth/verify-user', {
+    fetch(`${API}/auth/verify-user`, {
       method: "GET",
       credentials: 'include'
     })
@@ -113,7 +113,7 @@ const Home = () => {
   }, [user, dispatch, API])
   const Logout = async () => {
     try {
-      const res= await fetch('https://expense-trackerapi.vercel.app/auth/logout', {
+      const res= await fetch(`${API}/auth/logout`, {
         method: "GET",
         credentials: 'include'
       })

@@ -4,6 +4,8 @@ import { setContacts } from '../store/slicer/ContactSlice'
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import ContactExpense from './ContactExpense';
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const Contact = () => {
   const dispatch = useDispatch()
 
@@ -29,7 +31,7 @@ const Contact = () => {
       try {
         setLoading(true)
         setError('')
-        const res = await fetch('https://expense-trackerapi.vercel.app/Home/contacts', {
+        const res = await fetch(`${API}/Home/contacts`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

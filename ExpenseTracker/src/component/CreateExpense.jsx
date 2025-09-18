@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AddExpense, SetExpense } from '../store/slicer/expenseSlice'
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const CreatExpense = () => {
   const dispatch = useDispatch()
   const [Add, setAdd] = useState(false)
@@ -54,7 +56,7 @@ const CreatExpense = () => {
   const refetchExpenses = async () => {
     try {
       console.log('Refetching expenses...')
-      const res = await fetch('https://expense-trackerapi.vercel.app/Home/expense', {
+      const res = await fetch(`${API}/Home/expense`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
@@ -104,7 +106,7 @@ const CreatExpense = () => {
         Group: Current_Group?._id,
       }
       console.log(expensedata)
-      const response = await fetch('https://expense-trackerapi.vercel.app/Home/expense', {
+      const response = await fetch(`${API}/Home/expense`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -7,6 +7,8 @@ import { SetCurrent_Group } from '../store/slicer/CurrentGroup'
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense'
 import GroupExpense from './GroupExpense'
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const Group = () => {
   const dispatch = useDispatch()
   const Group = useSelector((state) => state.Group?.Group)
@@ -18,7 +20,7 @@ const Group = () => {
 
   useEffect(() => {
     const groupData = async () => {
-      const res = await fetch('https://expense-trackerapi.vercel.app/Home/group', {
+      const res = await fetch(`${API}/Home/group`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'

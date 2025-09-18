@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { AddExpense } from '../store/slicer/expenseSlice';
 
+const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+
 const ContactExpense = ({ contact, user }) => {
 
     const dispatch = useDispatch()
@@ -14,7 +16,7 @@ const ContactExpense = ({ contact, user }) => {
 
     const refetchExpenses = async () => {
         try {
-            const res = await fetch('https://expense-trackerapi.vercel.app/Home/expense', {
+            const res = await fetch(`${API}/Home/expense`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'

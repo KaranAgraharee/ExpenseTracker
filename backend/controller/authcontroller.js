@@ -1,18 +1,17 @@
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
 import { UserModel } from "../model/User.js"
-import { SendVerificationCOde } from "../middleware/email.js"
+import { SendVerificationCode } from "../middleware/email.js"
 import crypto from 'crypto'
+import { OtpModel } from "../model/otp.js"
 
-let verificationCode
 export const getuser = async (req, res, next) => {
   try {
     const user = await UserModel.findById(req.user._id)
     next()    
   } catch (error) {
-    console.log(error)
     res.status(500).json({
-      message: "User nahi mil rha hai",
+      message: "User not found",
       success: false,
     })
   }
@@ -61,27 +60,34 @@ export const signup = async (req, res) => {
       name: UserModel.name,
     })    
   } catch (error) {
-    console.log(error)
     res.status(500).json({
-      message: "error yah hai server error",
+      message: "Something went wrong",
       success: false,
     })
   }
 }
 export const sendOtp = async (req, res) => {
   try {
-    console.log("req.body =", req.body) // debug
     const { email } = req.body
-    console.log("Extracted email =", email) // debug
-
-    verificationCode = crypto.randomInt(100000, 999999)
-    await SendVerificationCOde(email, verificationCode)
-    res.status(200).json({
-      message: "OTP sent successfully",
-      success: true,
-    });
+    const user = UserModel.findOne({email})
+    const otp = crypto.randomInt(100000, 999999)
+    const sendotp = OtpModel.findOne({email})
+    if (user) {
+      return res.status(409).json({
+        message: "User is already exist, you can login",
+        success: false,
+      })
+    }else if(sendOtp){
+      const VerificationCode = OtpModel.findByIdAndUpdate(sendOtp._id, { email, otp }, { new: true })
+    }else{
+      const VerificationCode = OtpModel.create({ email, otp })  
+      await SendVerificationCode(email, VerificationCode.otp)
+      res.status(200).json({
+        message: "OTP sent successfully",
+        success: true,
+      });
+    }
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       message: "failed to send otp",
       success: false,
@@ -93,16 +99,16 @@ export const sendOtp = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { email, otp, timeOut } = req.body
-    const user = await UserModel.findOne({ email });
+    const { userEmail=email, code=otp, timeOut } = req.body
+    const user = await UserModel.findOne({ userEmail });
     if (user) {
       return res.status(404).json({
         message: "User already found.",
         sucess: false,
       })
     }
-    verificationCode
-    if (verificationCode !== otp || timeOut < new Date()) {
+    const {email, otp, createdAt} = OtpModel.findOne({ userEmail, code })
+    if (otp !== code || createdAt < timeOut - 10 * 60 * 1000) {
       return res.status(400).json({
         message: "Invalid or expired otp",
         sucess: false,
@@ -124,7 +130,6 @@ export const verifyOTP = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password)
     const user = await UserModel.findOne({ email })
     const errormessage = "Password is wrong"
     if (!user) {
@@ -177,7 +182,6 @@ export const getProfile = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized, no token found" });
     }
   } catch (error) {
-    console.log(error);
   }
 };
 
@@ -194,7 +198,6 @@ export const logout = async (req, res) => {
       message: 'Logout successFully',
     })
   } catch (error) {
-    console.log(error);
     res.status(200).json({
       success: true,
       message: 'Logout successFully',

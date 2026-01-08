@@ -48,14 +48,14 @@ const Login = () => {
                 className='w-full max-w-md '
             >
                 <motion.form 
-                    className='grid grid-cols-1 gap-6 p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20'
+                    className='form-container gap-6'
                     onSubmit={handleSubmit(onSubmit)}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
                 >
                     <motion.h1 
-                        className='text-center text-4xl font-bold bg-gradient-to-tr from-slate-900  bg-clip-text text-transparent p-4'
+                        className='form-title-large'
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4, duration: 0.6 }}
@@ -69,13 +69,13 @@ const Login = () => {
                     >
                         <input
                             type="text"
-                            className="w-full p-4 border-2 border-white/20 rounded-xl bg-black/10 text-black placeholder-Black/60 focus:border-blue-400 focus:outline-none transition-all duration-300"
+                            className="input-field-white"
                             {...register("email", { required: "email is required" })}
                             placeholder="Enter your Email"
                         />
                         {errors.email && (
                             <motion.p 
-                                className="text-red-400 text-sm mt-1"
+                                className="error-text"
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3 }}
@@ -100,7 +100,7 @@ const Login = () => {
                                   },
                               })}
                               placeholder='Enter Your Password'
-                              className="w-full p-4 border-2 border-white/20 rounded-xl bg-black/10 text-black placeholder-Black/60 focus:border-purple-400 focus:outline-none transition-all duration-300"
+                              className="input-field-white focus:border-purple-400"
                           />
                           <button
                             type="button"
@@ -123,7 +123,7 @@ const Login = () => {
                         </div>
                         {errors.password && (
                             <motion.p 
-                            className="text-red-400 text-sm mt-1"
+                            className="error-text"
                             initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3 }}
@@ -134,7 +134,7 @@ const Login = () => {
                     </motion.div>
                     {Error && (
                         <motion.p 
-                            className="text-red-400 text-sm mt-1"
+                            className="error-text"
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
@@ -143,7 +143,7 @@ const Login = () => {
                         </motion.p>
                     )}
                     <motion.button 
-                        className='w-full p-4 bg-gradient-to-r from-blue-500 to-teal-600 text-black font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl'
+                        className='btn-primary-teal'
                         type="submit"
                         whileHover={{ scale: isLoading ? 1 : 1.02 }}
                         whileTap={{ scale: isLoading ? 1 : 0.98 }}

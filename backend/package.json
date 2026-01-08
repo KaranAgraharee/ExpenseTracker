@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon idex.js",
-    "start": "node idex.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "build": "echo 'Build completed'"
   },
   "keywords": [],
@@ -26,5 +26,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.0",
     "nodemailer": "^6.10.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6"
   }
 }

@@ -9,7 +9,3 @@ export const transporter = createTransport({
     pass: "rvrr fykf qcst euqw",
   },
 })
-
-
-
-

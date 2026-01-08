@@ -1,14 +1,12 @@
 import React from "react";
-import Dashboard from "./Dashboard";
 import { useSelector, useDispatch } from "react-redux";
 import { Open } from "../store/slicer/navButton";
+import { navBar } from "../constants";
 
 const Navbar = () => {
   const Dispatch = useDispatch()
 
   const Navbutton = useSelector((state)=> state.navButton?.component)
-
-  const navBar = ["Dashboard.png", "Contact.png", "Group.png", "Bills.png", "Budgets.png"];
   
   const handleclick = (e) => {
     const Component = e.currentTarget?.id
@@ -21,7 +19,6 @@ const Navbar = () => {
       {navBar.map((navButton) => {
         const buttonId = navButton.slice(0, -4);
         const isActive = Navbutton === buttonId;
-        
         return (
           <button
             key={navButton}

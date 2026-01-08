@@ -1,11 +1,15 @@
 import React, { useEffect } from 'react'
-import { Groups } from '../store/slicer/GroupSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import CreateGrp from './CreateGroup'
 import { motion as Motion, AnimatePresence } from 'framer-motion'
+import { useDispatch, useSelector } from 'react-redux'
+
+import GroupExpense from './GroupExpense'
+import CreateGrp from './CreateGroup'
+
+import { GroupVariants, groupCardVariants } from '../constants'
+
+import { Groups } from '../store/slicer/GroupSlice'
 import { SetCurrent_Group } from '../store/slicer/CurrentGroup'
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense'
-import GroupExpense from './GroupExpense'
 
 const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
 
@@ -58,22 +62,11 @@ const Group = () => {
     }
 
   }
-  console.log(Expense)
-  const containerVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, type: 'spring', staggerChildren: 0.1 } },
-    exit: { opacity: 0, y: 30, transition: { duration: 0.3 } }
-  }
-  const groupCardVariants = {
-    hidden: { opacity: 0, scale: 0.95 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
-    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
-  }
 
   return (
     <Motion.div
       className='min-h-screen p-6 sm:p-8 text-white'
-      variants={containerVariants}
+      variants={GroupVariants}
       initial="hidden"
       animate="visible"
       exit="exit"

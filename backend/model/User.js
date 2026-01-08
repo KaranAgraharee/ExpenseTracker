@@ -6,4 +6,4 @@ const UserSchema =new mongoose.Schema({
     totalSpending:{type: Number, required: true},
     budget:{type: Number, required: true},
 },{timestamp: true})
-export const UserModel = mongoose.model('Users', UserSchema)
+export const UserModel = mongoose.model('Users', UserSchema) 

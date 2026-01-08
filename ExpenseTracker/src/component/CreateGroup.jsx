@@ -121,13 +121,13 @@ const CreateGrp = () => {
               className="bg-white rounded-lg  text-gray-700 shadow-lg p-6 w-full max-w-md mx-2"
             >
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                <input type="text" placeholder="Group Name" {...register('GroupName')} className="border p-2 rounded-md" />
+                <input type="text" placeholder="Group Name" {...register('GroupName')} className="input-field-gray" />
                 <input
                   type="text"
                   placeholder="Search Member by name or email"
                   value={query}
                   onChange={handleChange}
-                  className="border p-2 rounded-md"
+                  className="input-field-gray"
                 />
                 <div className="max-h-32 overflow-y-auto">
                   <AnimatePresence>
@@ -169,8 +169,8 @@ const CreateGrp = () => {
                   </AnimatePresence>
                 </div>
                 <div className="flex gap-2 mt-2">
-                  <input type="submit" value="Create Group" className="flex-1 bg-green-500 hover:bg-green-600 text-white rounded px-4 py-2 cursor-pointer transition" />
-                  <button type="button" onClick={CancelGroup} className='flex-1 bg-fuchsia-500 hover:bg-fuchsia-600 text-white rounded px-4 py-2 transition'>
+                  <input type="submit" value="Create Group" className="btn-secondary flex-1 bg-green-500 hover:bg-green-600 cursor-pointer" />
+                  <button type="button" onClick={CancelGroup} className='btn-secondary flex-1 bg-fuchsia-500 hover:bg-fuchsia-600'>
                     Cancel
                   </button>
                 </div>
@@ -182,7 +182,7 @@ const CreateGrp = () => {
       {!CreateGroupOpen && (
         <motion.button
           onClick={() => setCreateGroupOpen(true)}
-          className='bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-8 py-2 my-4 transition shadow-lg'
+          className='btn-secondary bg-blue-500 hover:bg-blue-600 px-8 py-2 my-4 shadow-lg'
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.05 }}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import SignUp from '../component/Signup'
-import Login from '../component/Login'
+import {SignUp, Login} from '../component/index'
 import {motion, AnimatePresence } from 'motion/react'
 
 const Auth = () => {
@@ -131,7 +130,7 @@ const Auth = () => {
             </motion.p>
             <motion.button
               onClick={toggleAuth}
-              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-md hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-200"
+              className="btn-toggle"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               initial={{ opacity: 0, y: 10 }}

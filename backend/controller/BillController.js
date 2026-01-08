@@ -64,7 +64,6 @@ export const getBill = async (req,res,next) => {
             Bill: bills,
         })
     } catch (error) {
-        console.log(error)
         res.status(500).json({
             message: "Internal server Error",
             success: false,

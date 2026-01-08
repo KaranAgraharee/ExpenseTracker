@@ -1,17 +1,15 @@
 import React, { useEffect } from 'react'
-import Navbar from '../component/Navbar'
-import Dashboard from '../component/Dashboard'
-import Budgets from '../component/Budgets'
-import Contact from '../component/Contact'
-import Group from '../component/Group'
+
+import{ Navbar, Dashboard, Budgets, Contact, Group, Bills} from '../component'
+
+// eslint-disable-next-line no-unused-vars
+import { AnimatePresence, motion } from 'motion/react'
+
 import { Open } from '../store/slicer/navButton'
 import { useSelector } from 'react-redux'
-import Bills from '../component/Bills'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../store/slicer/userSlice'
-// eslint-disable-next-line no-unused-vars
-import { AnimatePresence, motion } from 'motion/react'
 import { SetExpense } from '../store/slicer/expenseSlice'
 import { setBills } from '../store/slicer/billslice'
 import { setBudget } from '../store/slicer/Budgetslice'
@@ -205,7 +203,7 @@ const Home = () => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           transition={{ duration: 0.25 }}
-          className='fixed top-4 right-6 z-20 group flex  items-center gap-2 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 shadow-lg shadow-teal-900/20 ring-1 ring-white/10 hover:from-red-500 hover:to-emerald-500 text-white'
+          className='btn-danger fixed top-4 right-6 z-20 group'
         >
           <span className='text-sm font-semibold tracking-wide'>Logout</span>
           <motion.img

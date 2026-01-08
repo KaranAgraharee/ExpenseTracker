@@ -2,20 +2,15 @@ import React, { useState, useMemo } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
+
+import { ExpenseVariants, filterBtnVariants } from '../constants';
+
 import { SetExpense } from '../store/slicer/expenseSlice';
 import { SetCurrent_Expense } from '../store/slicer/CurrentExpense';
+
 import CreatExpense from './CreateExpense';
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, type: 'spring' } },
-  exit: { opacity: 0, y: 30, transition: { duration: 0.2 } }
-};
 
-const filterBtnVariants = {
-  hover: { scale: 1.07, backgroundColor: '#38bdf8', color: '#fff' },
-  tap: { scale: 0.97 }
-};
 
 const GroupExpense = ({ group, expenses, user }) => {
   
@@ -150,7 +145,7 @@ const GroupExpense = ({ group, expenses, user }) => {
       initial="hidden"
       animate="visible"
       exit="exit"
-      variants={cardVariants}
+      variants={ExpenseVariants}
     >
       <motion.div
         className="flex flex-wrap gap-2 justify-center mb-2"
@@ -243,7 +238,7 @@ const GroupExpense = ({ group, expenses, user }) => {
                       </div>
                       {expense.PaidBy._id === user._id&&(<button
                         onClick={() => openEdit(expense)}
-                        className="mt-2 text-sm text-blue-600 hover:underline"
+                        className="btn-link text-sm mt-2"
                       >
                         Edit
                       </button>
@@ -287,7 +282,7 @@ const GroupExpense = ({ group, expenses, user }) => {
                 value={form.Item}
                 onChange={onChange}
                 placeholder="ITEM"
-                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                className="input-field-gray"
                 type="text"
               />
               <input
@@ -295,32 +290,32 @@ const GroupExpense = ({ group, expenses, user }) => {
                 value={form.Price}
                 onChange={onChange}
                 placeholder="PRICE"
-                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                className="input-field-gray"
                 type="number"
               />
               <input
                 name="Time"
                 value={form.Time}
                 onChange={onChange}
-                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                className="input-field-gray"
                 type="time"
               />
               <input
                 name="Date"
                 value={form.Date}
                 onChange={onChange}
-                className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                className="input-field-gray"
                 type="date"
               />
               <div className="col-span-1 sm:col-span-2 flex gap-2 mt-2">
                 <button
-                  className="bg-teal-700 text-white px-4 py-2 rounded-md font-semibold hover:bg-teal-800 transition"
+                  className="btn-secondary"
                   type="submit"
                 >
                   Save
                 </button>
                 <button
-                  className="bg-slate-700 text-white px-4 py-2 rounded-md font-semibold hover:bg-slate-800 transition"
+                  className="btn-secondary-slate"
                   type="button"
                   onClick={() => { setEditOpen(false); setSelectedExpense(null); }}
                 >

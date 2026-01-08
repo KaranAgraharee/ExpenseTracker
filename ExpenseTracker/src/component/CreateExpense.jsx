@@ -143,7 +143,7 @@ const CreatExpense = () => {
       <motion.button
         key="add-expense-btn"
         whileTap={{ scale: 0.97 }}
-        className='mb-2 bg-teal-700 text-white px-6 py-2 rounded-lg shadow font-bold flex items-center gap-2 hover:bg-teal-800 transition'
+        className='btn-secondary mb-2'
         onClick={() => setAdd(true)}
       >
         <span className="text-2xl">+</span> Add Expense
@@ -228,7 +228,7 @@ const CreatExpense = () => {
                   whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
                   whileHover={{ scale: 1.02 }}
                   placeholder="ADD ITEM"
-                  className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                  className="input-field-gray"
                   type="text"
                   {...register("Item")}
                 />
@@ -236,7 +236,7 @@ const CreatExpense = () => {
                   whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
                   whileHover={{ scale: 1.02 }}
                   placeholder="PRICE"
-                  className="border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                  className="input-field-gray"
                   type="number"
                   {...register("Price")}
                 />
@@ -245,7 +245,7 @@ const CreatExpense = () => {
                     id="time"
                     placeholder=" "
                     {...register('Time')}
-                    className="peer border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                    className="input-field-gray peer"
                     type="time"
                     whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
                     whileHover={{ scale: 1.02 }}
@@ -261,7 +261,7 @@ const CreatExpense = () => {
                   <motion.input
                     id="date"
                     placeholder=" "
-                    className="peer border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition"
+                    className="input-field-gray peer"
                     type="date"
                     {...register('Date')}
                     whileFocus={{ scale: 1.04, borderColor: '#14b8a6' }}
@@ -277,13 +277,13 @@ const CreatExpense = () => {
                 <div className="col-span-1 sm:col-span-2 flex flex-col sm:flex-row gap-2 mt-2">
                   <motion.input
                     whileTap={{ scale: 0.97 }}
-                    className="bg-teal-700 text-white px-4 py-2 w-full sm:w-auto rounded-md font-semibold shadow hover:bg-teal-800 transition text-sm sm:text-base"
+                    className="btn-secondary w-full sm:w-auto text-sm sm:text-base"
                     type="submit"
                     value="Add Expense"
                   />
                   <motion.button
                     whileTap={{ scale: 0.97 }}
-                    className='bg-slate-700 text-white px-4 py-2 w-full sm:w-auto rounded-md font-semibold shadow hover:bg-slate-800 transition text-sm sm:text-base'
+                    className='btn-secondary-slate w-full sm:w-auto text-sm sm:text-base'
                     type="button"
                     onClick={() => {
                       setAdd(false)

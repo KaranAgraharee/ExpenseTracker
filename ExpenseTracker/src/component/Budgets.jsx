@@ -134,7 +134,7 @@ const Budgets = () => {
                 <h3 className="text-lg font-semibold text-blue-200">Monthly Budget</h3>
                 <button
                   onClick={() => setIsEditingBudget(!isEditingBudget)}
-                  className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                  className="btn-link text-sm font-medium text-blue-400 hover:text-blue-300"
                 >
                   {isEditingBudget ? 'Cancel' : 'Edit'}
                 </button>
@@ -151,7 +151,7 @@ const Budgets = () => {
                   />
                   <button
                     onClick={handleBudgetUpdate}
-                    className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    className="btn-secondary px-4 py-2 text-sm font-medium bg-blue-600 hover:bg-blue-700"
                   >
                     Save
                   </button>

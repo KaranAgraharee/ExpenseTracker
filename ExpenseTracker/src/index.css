@@ -1,1 +1,165 @@
 @import "tailwindcss";
+
+/* ============================================
+   REUSABLE BUTTON STYLES
+   ============================================ */
+
+/* Primary Button - Gradient Blue to Purple/Teal */
+.btn-primary {
+  @apply w-full p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Primary Button - Blue to Teal variant */
+.btn-primary-teal {
+  @apply w-full p-4 bg-gradient-to-r from-blue-500 to-teal-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Secondary Button - Solid Teal */
+.btn-secondary {
+  @apply bg-teal-700 text-white px-6 py-2 rounded-lg shadow font-bold flex items-center gap-2 hover:bg-teal-800 transition disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Secondary Button - Slate variant */
+.btn-secondary-slate {
+  @apply bg-slate-700 text-white px-4 py-2 rounded-md font-semibold shadow hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Danger/Logout Button - Teal/Emerald with hover to red */
+.btn-danger {
+  @apply flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-600 to-emerald-600 px-4 py-2 shadow-lg shadow-teal-900/20 ring-1 ring-white/10 hover:from-red-500 hover:to-emerald-500 text-white text-sm font-semibold tracking-wide transition-all duration-300;
+}
+
+/* Toggle Button - Blue to Purple gradient */
+.btn-toggle {
+  @apply px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-md hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-200;
+}
+
+/* Link Button - Text only buttons */
+.btn-link {
+  @apply text-blue-600 hover:text-blue-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-link-purple {
+  @apply text-purple-600 hover:text-purple-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Small Button - Compact variant */
+.btn-sm {
+  @apply px-4 py-2 text-sm;
+}
+
+/* Medium Button - Default size */
+.btn-md {
+  @apply px-6 py-2;
+}
+
+/* Large Button - Full width with padding */
+.btn-lg {
+  @apply w-full p-4;
+}
+
+/* ============================================
+   REUSABLE INPUT STYLES
+   ============================================ */
+
+/* Standard Form Input */
+.input-field {
+  @apply w-full p-4 border-2 border-black/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:outline-none transition-all duration-300;
+}
+
+.input-field:focus {
+  @apply border-fuchsia-400;
+}
+
+/* Form Input - White border variant */
+.input-field-white {
+  @apply w-full p-4 border-2 border-white/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:outline-none transition-all duration-300;
+}
+
+.input-field-white:focus {
+  @apply border-blue-400;
+}
+
+/* Form Input - Gray border variant (for light backgrounds) */
+.input-field-gray {
+  @apply border border-gray-300 px-3 py-2 rounded text-black w-full focus:outline-none focus:border-teal-600 transition;
+}
+
+/* OTP Input - Single digit input */
+.input-otp {
+  @apply w-12 h-12 text-center text-xl font-bold border-2 border-black/20 rounded-lg bg-black/10 text-black focus:border-fuchsia-500 focus:outline-none transition-all duration-300;
+}
+
+/* ============================================
+   REUSABLE FORM STYLES
+   ============================================ */
+
+/* Glass Morphism Form Container */
+.form-container {
+  @apply grid grid-cols-1 gap-4 p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20;
+}
+
+/* Form Title - Gradient Text */
+.form-title {
+  @apply text-center text-4xl font-bold bg-gradient-to-r from-gray-400 to-blue-900 bg-clip-text text-transparent pb-2;
+}
+
+.form-title-large {
+  @apply text-center text-4xl font-bold bg-gradient-to-tr from-slate-900 bg-clip-text text-transparent p-4;
+}
+
+/* ============================================
+   REUSABLE ERROR MESSAGE STYLES
+   ============================================ */
+
+/* Error Text */
+.error-text {
+  @apply text-red-400 text-sm mt-1;
+}
+
+.error-text-center {
+  @apply text-red-400 text-sm text-center;
+}
+
+/* ============================================
+   REUSABLE CARD/CONTAINER STYLES
+   ============================================ */
+
+/* Glass Card - Backdrop blur container */
+.card-glass {
+  @apply bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20;
+}
+
+/* Card - White background variant */
+.card-white {
+  @apply bg-white rounded-2xl shadow-2xl border border-gray-200;
+}
+
+/* ============================================
+   REUSABLE UTILITY CLASSES
+   ============================================ */
+
+/* Gradient Text - Gray to Blue */
+.text-gradient {
+  @apply bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent;
+}
+
+/* Smooth Transitions */
+.transition-smooth {
+  @apply transition-all duration-300;
+}
+
+/* Focus Ring */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+/* Hover Scale Effect */
+.hover-scale {
+  @apply transform hover:scale-105 transition-transform duration-300;
+}
+
+/* Active Scale Effect */
+.active-scale {
+  @apply active:scale-95 transition-transform duration-150;
+}

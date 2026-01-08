@@ -105,14 +105,14 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
       className='w-full max-w-md'
     >
       <motion.form 
-        className='grid grid-cols-1 -translate-y-6 gap-4 p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20'
+        className='form-container -translate-y-6'
         onSubmit={handleSubmit}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2, duration: 0.8 }}
       >
         <motion.h1 
-          className='text-center text-4xl pb-2 font-bold bg-gradient-to-r from-gray-400 to-blue-900 bg-clip-text text-transparent'
+          className='form-title'
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
@@ -142,13 +142,13 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
               onChange={(e) => handleOtpChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               data-index={index}
-              className="w-12 h-12 text-center text-xl font-bold border-2 border-black/20 rounded-lg bg-black/10 text-black focus:border-fuchsia-500 focus:outline-none transition-all duration-300"
+              className="input-otp"
             />
           ))}
         </motion.div>
         {error && (
           <motion.p 
-            className="text-red-400 text-sm text-center"
+            className="error-text-center"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
@@ -157,7 +157,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
           </motion.p>
         )}
         <motion.button 
-          className='w-full p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed'
+          className='btn-primary'
           type="submit"
           disabled={isLoading}
           whileHover={{ scale: isLoading ? 1 : 1.02 }}
@@ -177,7 +177,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
           <button
             type="button"
             onClick={onBack}
-            className='text-blue-600 hover:text-blue-800 transition-colors duration-300'
+            className='btn-link'
           >
             ← Back to Sign Up
           </button>
@@ -185,7 +185,7 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
             type="button"
             onClick={resendOTP}
             disabled={isLoading}
-            className='text-purple-600 hover:text-purple-800 transition-colors duration-300 disabled:opacity-50'
+            className='btn-link-purple'
           >
             Resend OTP
           </button>
@@ -276,13 +276,13 @@ const SignUp = () => {
           >
             <input
               type="text"
-              className="w-full p-4 border-2 border-black/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:border-fuchsia-300 focus:outline-none transition-all duration-300"
+              className="input-field focus:border-fuchsia-300"
               {...register("name", { required: "Name is required" })}
               placeholder="Enter your name"
             />
             {errors.name && (
               <motion.p 
-                className="text-red-400 text-sm mt-1"
+                className="error-text"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -298,13 +298,13 @@ const SignUp = () => {
           >
             <input
               type="text"
-              className="w-full p-4 border-2 border-black/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:border-fuchsia-400 focus:outline-none transition-all duration-300"
+              className="input-field focus:border-fuchsia-400"
               {...register("email", { required: "email is required" })}
               placeholder="Enter your Email"
             />
             {errors.email && (
               <motion.p 
-                className="text-red-400 text-sm mt-1"
+                className="error-text"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -328,11 +328,11 @@ const SignUp = () => {
                 },
               })}
               placeholder='Set Your Password'
-              className="w-full p-4 border-2 border-black/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:border-fuchsia-500 focus:outline-none transition-all duration-300"
+              className="input-field focus:border-fuchsia-500"
             />
             {errors.password && (
               <motion.p 
-                className="text-red-400 text-sm mt-1"
+                className="error-text"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -353,12 +353,12 @@ const SignUp = () => {
                 validate: (value, formValues) =>
                   value === formValues.password || 'Passwords do not match',
               })}
-              className="w-full p-4 border-2 border-black/20 rounded-xl bg-black/10 text-black placeholder-black/60 focus:border-fuchsia-600 focus:outline-none transition-all duration-300"
+              className="input-field focus:border-fuchsia-600"
               placeholder='Confirm Password'
             />
             {errors.confirmPassword && (
               <motion.p 
-                className="text-red-400 text-sm mt-1"
+                className="error-text"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
@@ -368,7 +368,7 @@ const SignUp = () => {
             )}
           </motion.div>
           <motion.button 
-            className='w-full p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-black font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed'
+            className='btn-primary'
             type="submit"
             disabled={isSubmitting}
             whileHover={{ scale: isSubmitting ? 1 : 1.02 }}

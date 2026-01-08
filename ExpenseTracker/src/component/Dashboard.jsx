@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useSelector } from 'react-redux'
+import { DashboardcardVariants } from '../constants'
 
-const cardVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: (i = 1) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-            delay: i * 0.15,
-            duration: 0.8,
-            type: 'spring',
-        },
-    }),
-}
 
 const Dashboard = () => {
 
     const expenses = useSelector((state) => state.expense.expense)
     const user = useSelector((state) => state.user.user)
-
     const userExpenses = expenses.filter(exp => exp.PaidBy?._id === user?._id)
     const otherPersonExpenses = expenses.filter(exp => exp.PaidBy?._id !== user?._id)
-
-
-
+    
     const thisMonthExpenses = expenses.filter(exp => {
         const expDate = new Date(exp.Date)
         const now = new Date()
@@ -84,7 +69,7 @@ const Dashboard = () => {
                         <motion.div
                             key={card.title}
                             custom={i + 1}
-                            variants={cardVariants}
+                            variants={DashboardcardVariants}
                             initial="hidden"
                             animate="visible"
                             className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-100"
@@ -108,14 +93,14 @@ const Dashboard = () => {
                     {/* Recent Activity */}
                     <motion.div
                         custom={5}
-                        variants={cardVariants}
+                        variants={DashboardcardVariants}
                         initial="hidden"
                         animate="visible"
                         className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 border border-gray-100"
                     >
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Recent Activity</h2>
-                            <button className="text-blue-600 hover:text-blue-800 font-medium">View All</button>
+                            <button className="btn-link font-medium">View All</button>
                         </div>
                         <div className='h-[50vh] overflow-y-scroll'>
                             {recentExpenses.length === 0 ? (
@@ -158,7 +143,7 @@ const Dashboard = () => {
                     {/* Quick Actions & Stats */}
                     <motion.div
                         custom={6}
-                        variants={cardVariants}
+                        variants={DashboardcardVariants}
                         initial="hidden"
                         animate="visible"
                         className="space-y-6"

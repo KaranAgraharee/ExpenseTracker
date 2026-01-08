@@ -13,10 +13,11 @@ export const ensureAuthenticated = (req, res, next) => {
             email: decoded.email,
         }
         const userId = req.user._id
-        next()
+        next() 
     } catch (error) {
         return res.status(403).json({
             message: 'unauthorized, JWT token is invalid'
         });
     }
 }
+ 

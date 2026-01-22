@@ -154,11 +154,11 @@ export const login = async (req, res) => {
       httpOnly: true,
       maxAge: 7200000,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      sameSite: process.env.NODE_ENV === 'production'? 'None': 'Lax',
       path: '/',
     });
     res.status(200).json({
-      message: "Login sucessfully",
+      message: "Login successfully",
       success: true,
       jwttoken,
       email,
@@ -166,7 +166,7 @@ export const login = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Internal server error function m error aa rha",
+      message: "Internal server error",
       success: false,
     });
   }
@@ -202,5 +202,6 @@ export const logout = async (req, res) => {
     })
   }
 };
+
 
 

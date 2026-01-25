@@ -14,6 +14,7 @@ export const SendVerificationCode = async(email, verificationCode)=> {
           html: verification_Email_Template(verificationCode) ,
         })      
     } catch (error) {
-        return console.error(error)
+        console.error("Email send error:", error)
+        throw error
     }
 }

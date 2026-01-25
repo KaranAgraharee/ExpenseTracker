@@ -10,6 +10,7 @@ import { connectDB } from "./model/db.js"
 import './model/User.js'
 import './model/group.js'
 import './model/expense.js'
+import './model/otp.js'
 
 import { AuthRouter } from "./Routes/AuthRouter.js"
 import { ExpenseRouter } from "./Routes/expenseRouter.js"
@@ -24,22 +25,21 @@ const port = process.env.PORT || 7000
 
 connectDB()
 
-// trust proxy so "secure" cookies work behind reverse proxies (e.g., Vercel/Render)
+
 app.set('trust proxy', 1)
 
 const allowedOrigins = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     process.env.FRONTEND_URL,
-    'https://expense-tracker-ten-mauve-66.vercel.app/', // Add your frontend Vercel URL here
-].filter(Boolean)
-
+    'https://expense-tracker-ten-mauve-66.vercel.app/',
+    'https://expense-tracker-frontend.vercel.app/'
+]
 app.use(cors({
     origin: (origin, callback) => {
-        // allow REST tools or same-origin requests with no Origin header
+        
         if (!origin) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
-        // Allow Vercel subdomains
         if (origin && origin.endsWith('.vercel.app')) return callback(null, true)
         return callback(new Error(`CORS not allowed for origin: ${origin}`))
     },

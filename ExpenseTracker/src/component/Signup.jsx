@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import {useNavigate} from 'react-router-dom'
 
-const API = import.meta.env.VITE_API_URL || 'https://expense-trackerapi.vercel.app'
+const API = 'http://localhost:7000'
 
 const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) => {
   const navigate = useNavigate()
@@ -54,7 +54,6 @@ const OTPVerification = ({ email, signupData, onVerificationComplete, onBack }) 
         setIsLoading(false)
         return
       }
-      // 2. Register user after OTP is verified
       const signupPayload = { ...signupData }
       delete signupPayload.confirmPassword
       const signupRes = await fetch(`${API}/auth/signup`, {
@@ -200,33 +199,33 @@ const SignUp = () => {
   const [showOTP, setShowOTP] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [signupData, setSignupData] = useState(null)
+  const [submitError, setSubmitError] = useState('')
 
   const handleFormSubmit = async (data) => {
     setIsSubmitting(true)
+    setSubmitError('')
     try {
-      // Send OTP only
       const res = await fetch(`${API}/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email })
       })
+      const json = await res.json().catch(() => ({}))
       if (res.ok) {
         setSignupData(data)
         setShowOTP(true)
       } else {
-        console.log('server Error')
+        setSubmitError(json.message || 'Failed to send OTP. Please try again.')
       }
-    } catch (error) {
-        console.log(error) 
+    } catch {
+      setSubmitError('Could not reach server. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleVerificationComplete = () => {
-    // Handle successful verification - redirect to login or dashboard
-    console.log('OTP verification and signup successful!')
-    // You can add navigation logic here
+
   }
 
   const handleBackToSignup = () => {
@@ -367,6 +366,16 @@ const SignUp = () => {
               </motion.p>
             )}
           </motion.div>
+          {submitError && (
+            <motion.p
+              className="error-text"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {submitError}
+            </motion.p>
+          )}
           <motion.button 
             className='btn-primary'
             type="submit"

@@ -69,26 +69,34 @@ export const signup = async (req, res) => {
 export const sendOtp = async (req, res) => {
   try {
     const { email } = req.body
-    const user = UserModel.findOne({email})
+    if (!email) {
+      return res.status(400).json({ message: "Email is required", success: false })
+    }
+    const user = await UserModel.findOne({ email })
+    const existingOtp = await OtpModel.findOne({ email })
     const otp = crypto.randomInt(100000, 999999)
-    const sendotp = OtpModel.findOne({email})
+    const otpStr = String(otp)
     if (user) {
+      console.log(user)
       return res.status(409).json({
         message: "User is already exist, you can login",
         success: false,
       })
-    }else if(sendOtp){
-      const VerificationCode = OtpModel.findByIdAndUpdate(sendOtp._id, { email, otp }, { new: true })
-    }else{
-      const VerificationCode = OtpModel.create({ email, otp })  
-      await SendVerificationCode(email, VerificationCode.otp)
-      res.status(200).json({
-        message: "OTP sent successfully",
-        success: true,
-      });
     }
+    if (existingOtp) {
+      await OtpModel.findByIdAndUpdate(existingOtp._id, { email, otp: otpStr }, { new: true })
+    } else {
+      await OtpModel.create({ email, otp: otpStr })
+    }
+
+    await SendVerificationCode(email, otpStr)
+    return res.status(200).json({
+      message: "OTP sent successfully",
+      success: true,
+    })
   } catch (error) {
-    res.status(500).json({
+    console.error("Send OTP error:", error)
+    return res.status(500).json({
       message: "failed to send otp",
       success: false,
     })
@@ -182,7 +190,6 @@ export const getProfile = async (req, res, next) => {
   } catch (error) {
   }
 };
-
 export const logout = async (req, res) => {
   try {
     res.clearCookie("Auth_Token", {

@@ -107,31 +107,42 @@ export const sendOtp = async (req, res) => {
 
 export const verifyOTP = async (req, res) => {
   try {
-    const { userEmail=email, code=otp, timeOut } = req.body
-    const user = await UserModel.findOne({ userEmail });
-    if (user) {
-      return res.status(404).json({
-        message: "User already found.",
-        sucess: false,
-      })
-    }
-    const {email, otp, createdAt} = OtpModel.findOne({ userEmail, code })
-    if (otp !== code || createdAt < timeOut - 10 * 60 * 1000) {
+    const { email, otp } = req.body;
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({
-        message: "Invalid or expired otp",
-        sucess: false,
-      })
+        message: "User already exists",
+        success: false,
+      });
     }
-    res.status(200).json({
+    const otpRecord = await OtpModel.findOne({ email, otp });
+    if (!otpRecord) {
+      return res.status(400).json({
+        message: "Invalid OTP",
+        success: false,
+      });
+    }
+    const OTP_EXPIRY_TIME = 10 * 60 * 1000;
+    const isExpired = Date.now() - otpRecord.createdAt.getTime() < OTP_EXPIRY_TIME;
+  
+    if (isExpired) {
+      return res.status(400).json({
+        message: "OTP expired",
+        success: false,
+      });
+    }
+  
+    return res.status(200).json({
       message: "OTP verified successfully",
       success: true,
-    })
+    });
+  
   } catch (error) {
-    console.error("OTP Verification Error:", error)
+    console.error("Verify OTP error:", error);
     res.status(500).json({
       message: "Internal server error",
       success: false,
-    })
+    });
   }
 }
 
